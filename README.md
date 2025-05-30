@@ -66,6 +66,11 @@ To set up environment variables and secrets:
    3. Give it a name, set an expiration, and select the "repo" scope
    4. Copy the generated token and add it as a secret in your repository settings
 
+## Pages
+
+https://tatoflam.github.io/banner-generator-app
+
+
 ## Project Structure
 ```
 banner-generator-app/
