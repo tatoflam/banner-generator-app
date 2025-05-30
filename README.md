@@ -43,19 +43,28 @@ You can also deploy manually using:
 npm run deploy
 ```
 
-### Environment Variables
-The application uses the following environment variables:
+### Environment Variables and Secrets
+The application uses the following environment variables and secrets:
 
 - `REACT_APP_STABILITY_API_KEY`: Your Stability AI API key for AI banner refinement
+- `GH_PAGES_TOKEN`: A GitHub Personal Access Token with repo permissions for GitHub Pages deployment
 
-To set up environment variables:
+To set up environment variables and secrets:
 
 1. For local development, create a `.env` file in the root directory:
    ```
    REACT_APP_STABILITY_API_KEY=your_api_key_here
    ```
 
-2. For GitHub Actions deployment, add the environment variables as secrets in your GitHub repository settings.
+2. For GitHub Actions deployment, add the following secrets in your GitHub repository settings (Settings > Secrets and variables > Actions > New repository secret):
+   - `REACT_APP_STABILITY_API_KEY`: Your Stability AI API key
+   - `GH_PAGES_TOKEN`: A GitHub Personal Access Token with repo permissions
+   
+   To create a Personal Access Token:
+   1. Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
+   2. Click "Generate new token" and select "Classic"
+   3. Give it a name, set an expiration, and select the "repo" scope
+   4. Copy the generated token and add it as a secret in your repository settings
 
 ## Project Structure
 ```
