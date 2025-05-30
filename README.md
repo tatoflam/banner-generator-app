@@ -47,7 +47,7 @@ npm run deploy
 
 The application uses the following environment variables and secrets:
 
-- `REACT_APP_STABILITY_API_KEY`: Your Stability AI API key for AI banner refinement <- This is invalid in usual operation. Please fill this in Stability `AI API Key` field in application by yourself.  
+- `REACT_APP_STABILITY_API_KEY`: Your [Stability AI API key](https://platform.stability.ai/) for AI banner refinement <- This is invalid in usual operation. Please fill this at `Stability AI API Key` field in application by yourself.  
 - `GH_PAGES_TOKEN`: A GitHub Personal Access Token with repo permissions for GitHub Pages deployment
 
 To set up environment variables and secrets:
