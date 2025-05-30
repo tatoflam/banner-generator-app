@@ -150,14 +150,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
   };
   
   useEffect(() => {
-    // Load images from public/assets
+    // Load images from public/assets with PUBLIC_URL prefix for GitHub Pages compatibility
     const images = [
       { name: 'None', path: null },
-      { name: 'Spring', path: '/assets/spring.png' },
-      { name: 'Summer', path: '/assets/summer.png' },
-      { name: 'Autumn', path: '/assets/autumn.png' },
-      { name: 'Winter', path: '/assets/winter.png' },
-      { name: 'Nogawa', path: '/assets/nogawa.png' }
+      { name: 'Spring', path: `${process.env.PUBLIC_URL}/assets/spring.png` },
+      { name: 'Summer', path: `${process.env.PUBLIC_URL}/assets/summer.png` },
+      { name: 'Autumn', path: `${process.env.PUBLIC_URL}/assets/autumn.png` },
+      { name: 'Winter', path: `${process.env.PUBLIC_URL}/assets/winter.png` },
+      { name: 'Nogawa', path: `${process.env.PUBLIC_URL}/assets/nogawa.png` }
     ];
     
     setImageOptions(images);
