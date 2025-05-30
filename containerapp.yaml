@@ -1,0 +1,35 @@
+apiVersion: 2023-05-01
+type: Microsoft.App/containerApps
+name: vectordb
+properties:
+  environmentId: /subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RG}/providers/Microsoft.App/managedEnvironments/${ENVIRONMENT_NAME}
+  configuration:
+    ingress:
+      external: false
+      targetPort: 5432
+    registries: []
+  template:
+    containers:
+      - image: ankane/pgvector:latest
+        name: vectordb
+        env:
+          - name: POSTGRES_DB
+            value: mydatabase
+          - name: POSTGRES_USER
+            value: myuser
+          - name: POSTGRES_PASSWORD
+            value: mypassword
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+        volumeMounts:
+          - volumeName: pgdata
+            mountPath: /var/lib/postgresql/data
+    scale:
+      minReplicas: 1
+      maxReplicas: 1
+    volumes:
+      - name: pgdata
+        storageType: AzureFile
+        storageName: pgdata
+        storageSize: 2Gi

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import LogoGenerator from './components/LogoGenerator';
 import LogoPreview from './components/LogoPreview';
+import AIRefiner from './components/AIRefiner';
 
 const AppContainer = styled.div`
   max-width: 1200px;
@@ -25,33 +26,64 @@ const MainContent = styled.main`
   }
 `;
 
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 function App() {
   const [logoSettings, setLogoSettings] = useState({
-    text: 'Your Logo',
-    fontFamily: 'Arial',
-    fontSize: 48,
-    fontColor: '#000000',
-    backgroundColor: '#ffffff',
+    text: 'すっぱくろ',
+    fontFamily: 'Zen Maru Gothic',
+    fontSize: 56,
+    fontColor: '#fff1ff',
+    backgroundColor: '#fab4b4',
     shape: 'none',
-    shapeColor: '#cccccc'
+    shapeColor: '#cccccc',
+    shapeImage: null,
+    shapeSize: 80,
+    backgroundImage: null,
+    backgroundSize: 100,
+    customBackgroundDimensions: true,
+    backgroundWidth: 360,
+    backgroundHeight: 120,
+    logoScale: 100,
+    logoOffsetX: 0,
+    logoOffsetY: 0,
+    refinedImageUrl: null
   });
+  
+  const logoRef = useRef(null);
 
   const handleSettingsChange = (newSettings) => {
     setLogoSettings({ ...logoSettings, ...newSettings });
+  };
+  
+  const handleRefinementComplete = (refinedImageUrl) => {
+    setLogoSettings({ ...logoSettings, refinedImageUrl });
   };
 
   return (
     <AppContainer>
       <Header>
-        <h1>Logo Generator App</h1>
-        <p>Create custom logos in seconds</p>
+        <h1>Suppakuro Generator</h1>
+        <p>Create your custom banner in seconds</p>
       </Header>
       <MainContent>
         <LogoGenerator 
           settings={logoSettings} 
           onSettingsChange={handleSettingsChange} 
         />
-        <LogoPreview settings={logoSettings} />
+        <RightColumn>
+          <LogoPreview 
+            settings={logoSettings} 
+            logoRef={logoRef}
+          />
+          <AIRefiner 
+            logoRef={logoRef} 
+            onRefinementComplete={handleRefinementComplete} 
+          />
+        </RightColumn>
       </MainContent>
     </AppContainer>
   );

@@ -1,0 +1,15 @@
+apiVersion: 2023-05-01
+type: Microsoft.App/containerApps
+name: vectordb
+properties:
+  template:
+    containers:
+      - image: ankane/pgvector:latest
+        name: vectordb
+        volumeMounts:
+          - volumeName: pgdata
+            mountPath: /var/lib/postgresql/data
+    volumes:
+      - name: pgdata
+        storageType: AzureFile
+        storageName: pgdata
