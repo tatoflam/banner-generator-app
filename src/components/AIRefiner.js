@@ -486,11 +486,13 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
                 error.message.includes('500') ||
                 error.message.includes('503')
               )) {
-              const retryMessage = `Attempt ${attempt + 1} failed. Retrying in ${currentDelay/1000} seconds...`;
+              // Capture the current delay value to avoid the ESLint no-loop-func warning
+              const delayForThisAttempt = currentDelay;
+              const retryMessage = `Attempt ${attempt + 1} failed. Retrying in ${delayForThisAttempt/1000} seconds...`;
               console.log(retryMessage);
               // Update the status message to inform the user about the retry
               setMessage(`Retrying... ${retryMessage}`);
-              await new Promise(resolve => setTimeout(resolve, currentDelay));
+              await new Promise(resolve => setTimeout(resolve, delayForThisAttempt));
               // Exponential backoff - double the delay for the next attempt
               currentDelay *= 2;
             } else {

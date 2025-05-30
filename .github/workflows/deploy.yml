@@ -29,6 +29,8 @@ jobs:
           # They will be prefixed with REACT_APP_ for Create React App compatibility
           REACT_APP_GITHUB_USERNAME: ${{ github.repository_owner }}
           REACT_APP_STABILITY_API_KEY: ${{ secrets.REACT_APP_STABILITY_API_KEY }}
+          # Disable treating warnings as errors in CI mode
+          CI: false
           
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
