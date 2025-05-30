@@ -7,6 +7,17 @@ const RefinerContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
 `;
 
 const Button = styled.button`
@@ -26,6 +37,11 @@ const Button = styled.button`
   &:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+  }
+  
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 0.75rem 0;
   }
 `;
 

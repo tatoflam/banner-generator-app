@@ -9,6 +9,16 @@ const AppContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
 `;
 
 const Header = styled.header`
@@ -23,6 +33,11 @@ const MainContent = styled.main`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
   }
 `;
 

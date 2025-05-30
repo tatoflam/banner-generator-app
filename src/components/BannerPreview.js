@@ -10,6 +10,16 @@ const PreviewContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
 `;
 
 const PreviewArea = styled.div`
@@ -113,12 +123,25 @@ const DownloadButton = styled.button`
     background-color: #cccccc;
     cursor: not-allowed;
   }
+  
+  @media (max-width: 480px) {
+    width: 100%;
+    margin-right: 0;
+    padding: 0.75rem 0;
+  }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 `;
 
 const RefinedImage = styled.img`

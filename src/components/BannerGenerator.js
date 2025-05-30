@@ -11,6 +11,8 @@ const GeneratorContainer = styled.div`
   max-height: 980px;
   overflow-y: auto;
   scrollbar-width: thin;
+  width: 100%;
+  box-sizing: border-box;
   
   &::-webkit-scrollbar {
     width: 8px;
@@ -30,8 +32,14 @@ const GeneratorContainer = styled.div`
   }
   
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 0.75rem;
     height: 85vh;
+    margin: 0;
+    border-radius: 4px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
   }
 `;
 
