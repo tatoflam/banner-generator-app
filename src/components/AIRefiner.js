@@ -63,15 +63,109 @@ const Label = styled.label`
   font-weight: bold;
 `;
 
+// Helper function to resize an image to the required dimensions
+const resizeImage = (dataUrl, targetWidth, targetHeight) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      // Create a canvas with the target dimensions
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+      
+      // Fill the canvas with the background color (white)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
+      
+      // Calculate dimensions to maintain aspect ratio
+      const originalAspect = img.width / img.height;
+      const targetAspect = targetWidth / targetHeight;
+      
+      let drawWidth, drawHeight, offsetX, offsetY;
+      
+      if (originalAspect > targetAspect) {
+        // Original image is wider than target
+        drawWidth = targetWidth;
+        drawHeight = targetWidth / originalAspect;
+        offsetX = 0;
+        offsetY = (targetHeight - drawHeight) / 2;
+      } else {
+        // Original image is taller than target
+        drawHeight = targetHeight;
+        drawWidth = targetHeight * originalAspect;
+        offsetX = (targetWidth - drawWidth) / 2;
+        offsetY = 0;
+      }
+      
+      // Draw the image centered on the canvas
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      
+      // Convert canvas to data URL
+      const resizedDataUrl = canvas.toDataURL('image/png');
+      resolve(resizedDataUrl);
+    };
+    
+    img.onerror = (error) => {
+      reject(error);
+    };
+    
+    img.src = dataUrl;
+  });
+};
+
+const StylePresetSelect = styled.select`
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-family: Arial, sans-serif;
+`;
+
+const StylePresetOption = styled.option`
+  padding: 0.5rem;
+`;
+
 function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
-  const [apiKey, setApiKey] = useState('');
-  const [userPrompt, setUserPrompt] = useState('Enhance this image by making it more artistic. Maintain the original style and colors but dramatically improve the overall quality and visual appeal. Keep the text with some modifications.');
+  // Read API key from environment variable if available
+  const defaultApiKey = process.env.REACT_APP_STABILITY_API_KEY || '';
+  const [apiKey, setApiKey] = useState(defaultApiKey);
+  const [userPrompt, setUserPrompt] = useState('Make the river attractive with extraordinary big fish, frogs, Dinosaur, Japanese children from 6 to 9 years old putting on purple T-shirt. Transform this image into an abstract art style. Use bold colors, geometric shapes, and artistic patterns while maintaining the overall theme. Make it visually striking and modern. Keep the text readable but integrate it artistically into the design.');
+  const [negativePrompt, setNegativePrompt] = useState('Do not draw totally different character, maintain the original text and theme, avoid blurry or distorted text, no watermarks, no signatures. If there is no text in the image, do not include any text in generated image.');
+  const [stylePreset, setStylePreset] = useState('anime');
+  const [strength, setStrength] = useState(39);
   const [isRefining, setIsRefining] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
+  
+  // Available style presets for Stability AI
+  const stylePresets = [
+    { value: '3d-model', label: '3D Model' },
+    { value: 'analog-film', label: 'Analog Film' },
+    { value: 'anime', label: 'Anime' },
+    { value: 'cinematic', label: 'Cinematic' },
+    { value: 'comic-book', label: 'Comic Book' },
+    { value: 'digital-art', label: 'Digital Art' },
+    { value: 'enhance', label: 'Enhance' },
+    { value: 'fantasy-art', label: 'Fantasy Art' },
+    { value: 'isometric', label: 'Isometric' },
+    { value: 'line-art', label: 'Line Art' },
+    { value: 'low-poly', label: 'Low Poly' },
+    { value: 'modeling-compound', label: 'Modeling Compound' },
+    { value: 'neon-punk', label: 'Neon Punk' },
+    { value: 'origami', label: 'Origami' },
+    { value: 'photographic', label: 'Photographic' },
+    { value: 'pixel-art', label: 'Pixel Art' },
+    { value: 'tile-texture', label: 'Tile Texture' }
+  ];
 
   const refineWithAI = async () => {
+    console.log('Refine with AI button clicked');
+    console.log('Current API key:', apiKey);
+    
     if (!apiKey) {
+      console.error('No API key provided');
       setMessage('Please enter your Stability AI API key');
       setMessageType('error');
       return;
@@ -128,8 +222,12 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
           backgroundPosition: 'center',
           margin: '0',
-          padding: '0'
+          padding: '0',
+          border: 'none'
         },
+        // Remove any whitespace around the image
+        width: bannerElement.clientWidth,
+        height: bannerElement.clientHeight,
         // Suppress console errors during capture
         onclone: (clonedDoc) => {
           // Get the preview element in the cloned document
@@ -182,7 +280,6 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           clonedDoc.head.appendChild(style);
         }
       };
-      
       // Temporarily suppress console errors
       const originalConsoleError = console.error;
       console.error = (msg) => {
@@ -228,7 +325,7 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       // This will help us generate a similar banner with the same style
       const bannerText = bannerElement.innerText || 'Your Banner';
       const computedStyle = window.getComputedStyle(bannerElement);
-      const fontFamily = computedStyle.fontFamily || 'Arial';
+      const fontFamily = computedStyle.fontFamily || 'Zen Maru Gothic';
       const fontSize = computedStyle.fontSize || '48px';
       const fontColor = computedStyle.color || 'black';
       const backgroundColor = computedStyle.backgroundColor || 'transparent';
@@ -238,8 +335,9 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         The current banner has text "${bannerText}" with font family "${fontFamily}" 
         at size "${fontSize}" and color "${fontColor}" on a "${backgroundColor}" background.
         The banner dimensions are ${width}x${height} pixels.
-        Please create an enhanced version of this image that maintains the same text and overall style,
+        Please create an enhanced version of this image that maintains the same text content and overall style,
         but with improved visual quality, better typography, and more attractive appearance.
+        The text should be readable with the specified banner text character with bold style and the image should be visually appealing.
       `;
       console.log('Banner description:', bannerDescription);
       
@@ -248,33 +346,78 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       console.log('Enhanced prompt:', enhancedPrompt);
       console.log('User prompt being used:', userPrompt);
       
-      // Convert data URL to Blob
+      // Convert data URL to Blob (not used directly, but kept for reference)
       const fetchResponse = await fetch(dataUrl);
-      const blob = await fetchResponse.blob();
+      await fetchResponse.blob(); // We don't need to store this since we're using resizedBlob later
       
-      // Create a File object from the Blob
-      const imageFile = new File([blob], 'banner.png', { type: 'image/png' });
-      console.log('Created image file from data URL:', imageFile);
+      // Calculate dimensions that maintain aspect ratio but meet minimum pixel requirements
+      // The API requires at least 262,144 pixels (e.g., 512x512)
+      const minTotalPixels = 262144; // 512x512
+      const originalAspectRatio = width / height;
+      
+      let targetWidth, targetHeight;
+      
+      if (originalAspectRatio >= 1) {
+        // Landscape or square image
+        targetHeight = Math.sqrt(minTotalPixels / originalAspectRatio);
+        targetWidth = targetHeight * originalAspectRatio;
+      } else {
+        // Portrait image
+        targetWidth = Math.sqrt(minTotalPixels * originalAspectRatio);
+        targetHeight = targetWidth / originalAspectRatio;
+      }
+      
+      // Ensure dimensions are integers and meet minimum requirements
+      targetWidth = Math.max(Math.ceil(targetWidth), 512);
+      targetHeight = Math.max(Math.ceil(targetHeight), 512);
+      
+      console.log(`Resizing image to maintain aspect ratio: ${width}x${height} -> ${targetWidth}x${targetHeight}`);
+      const resizedImageUrl = await resizeImage(dataUrl, targetWidth, targetHeight);
+      
+      // Store the original dimensions for logging purposes
+      console.log(`Original dimensions: ${width}x${height}, aspect ratio: ${originalAspectRatio}`);
+      
+      // Convert resized image to Blob
+      const resizedFetchResponse = await fetch(resizedImageUrl);
+      const resizedBlob = await resizedFetchResponse.blob();
+      
+      // Create a File object from the resized Blob
+      const imageFile = new File([resizedBlob], 'banner.png', { type: 'image/png' });
+      console.log(`Created resized image file from data URL (${targetWidth}x${targetHeight}):`, imageFile);
       
       // Function to make API request with retry logic
-      const makeRequestWithRetry = async (retries = 3, delay = 2000) => {
+      const makeRequestWithRetry = async (retries = 3, initialDelay = 2000) => {
         // Add a timeout promise to handle potential hanging requests
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Request timed out')), 30000); // 30 second timeout
         });
         
+        let currentDelay = initialDelay;
+        
         for (let attempt = 0; attempt < retries; attempt++) {
           try {
+            // Convert strength percentage to API value (0-1 range)
+            const strengthValue = (strength / 100).toFixed(2);
+            console.log(`Converting strength slider value ${strength}% to API value ${strengthValue}`);
+            
             // Create FormData for the API request
             const formData = new FormData();
             formData.append('image', imageFile);
-            formData.append('text_prompts[0][text]', enhancedPrompt);
-            formData.append('text_prompts[0][weight]', '1.0');
+            formData.append('prompt', enhancedPrompt);
+            formData.append('negative_prompt', negativePrompt);
+            formData.append('strength', strengthValue); // Using the value from the slider
+            formData.append('cfg_scale', '15'); // Higher value makes the image adhere more to the prompt
+            formData.append('style_preset', stylePreset);
+            formData.append('steps', '40'); // More steps for higher quality
             
             // Log the form data being sent
             console.log('Form data being sent to API:');
-            console.log('- text_prompts[0][text]:', enhancedPrompt);
-            console.log('- text_prompts[0][weight]:', '1.0');
+            console.log('- prompt:', enhancedPrompt);
+            console.log('- negative_prompt:', negativePrompt);
+            console.log('- strength:', strengthValue);
+            console.log('- cfg_scale:', '15');
+            console.log('- style_preset:', stylePreset);
+            console.log('- steps:', '40');
             
             // Create headers with API key
             const headers = new Headers();
@@ -292,7 +435,8 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
             console.log('Sending request to Stability AI API (attempt', attempt + 1, ')');
             
             // Make the fetch request with timeout
-            const fetchPromise = fetch('https://api.stability.ai/v2beta/stable-image/edit/erase', requestOptions)
+            // Use the v2beta stable-image/generate/ultra endpoint for better results
+            const fetchPromise = fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', requestOptions)
               .then(response => {
                 if (!response.ok) {
                   return response.text().then(text => {
@@ -321,13 +465,13 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
                 error.message.includes('500') ||
                 error.message.includes('503')
               )) {
-              const retryMessage = `Attempt ${attempt + 1} failed. Retrying in ${delay/1000} seconds...`;
+              const retryMessage = `Attempt ${attempt + 1} failed. Retrying in ${currentDelay/1000} seconds...`;
               console.log(retryMessage);
               // Update the status message to inform the user about the retry
               setMessage(`Retrying... ${retryMessage}`);
-              await new Promise(resolve => setTimeout(resolve, delay));
+              await new Promise(resolve => setTimeout(resolve, currentDelay));
               // Exponential backoff - double the delay for the next attempt
-              delay *= 2;
+              currentDelay *= 2;
             } else {
               // For other errors, don't retry
               throw error;
@@ -471,6 +615,52 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           setUserPrompt(e.target.value);
         }}
       />
+      
+      <Label htmlFor="negativePrompt">Negative Prompt (what to avoid)</Label>
+      <PromptTextarea
+        id="negativePrompt"
+        placeholder="Describe what you want the AI to avoid in the refinement..."
+        value={negativePrompt}
+        onChange={(e) => {
+          console.log('Updating negative prompt to:', e.target.value);
+          setNegativePrompt(e.target.value);
+        }}
+      />
+      
+      <Label htmlFor="stylePreset">Style Preset</Label>
+      <StylePresetSelect
+        id="stylePreset"
+        value={stylePreset}
+        onChange={(e) => {
+          console.log('Updating style preset to:', e.target.value);
+          setStylePreset(e.target.value);
+        }}
+      >
+        {stylePresets.map(preset => (
+          <StylePresetOption key={preset.value} value={preset.value}>
+            {preset.label}
+          </StylePresetOption>
+        ))}
+      </StylePresetSelect>
+      
+      <Label htmlFor="strength">Transformation Strength: {strength}%</Label>
+      <input
+        type="range"
+        id="strength"
+        min="1"
+        max="100"
+        value={strength}
+        onChange={(e) => {
+          const value = parseInt(e.target.value, 10);
+          console.log('Updating strength to:', value);
+          setStrength(value);
+        }}
+        style={{ width: '100%', marginBottom: '1rem' }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.8rem', color: '#666' }}>
+        <span>Subtle Changes</span>
+        <span>Dramatic Changes</span>
+      </div>
       
       <Button 
         onClick={refineWithAI} 

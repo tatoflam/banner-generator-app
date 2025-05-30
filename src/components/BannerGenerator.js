@@ -200,11 +200,55 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </FormGroup>
         
         <FormGroup>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id="subtitleVisible"
+              name="subtitleVisible"
+              checked={settings.subtitleVisible}
+              onChange={(e) => {
+                onSettingsChange({ subtitleVisible: e.target.checked });
+              }}
+              style={{ marginRight: '0.5rem' }}
+            />
+            <Label htmlFor="subtitleVisible">Show Subtitle</Label>
+          </div>
+          
+          {settings.subtitleVisible && (
+            <>
+              <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
+              <Input
+                type="text"
+                id="subtitle"
+                name="subtitle"
+                value={settings.subtitle}
+                onChange={handleChange}
+                placeholder="第1回"
+              />
+              
+              <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
+              <SliderContainer>
+                <Input
+                  type="range"
+                  id="subtitleFontSize"
+                  name="subtitleFontSize"
+                  min="8"
+                  max="36"
+                  value={settings.subtitleFontSize}
+                  onChange={handleChange}
+                />
+                <SliderValue>{settings.subtitleFontSize}px</SliderValue>
+              </SliderContainer>
+            </>
+          )}
+        </FormGroup>
+        
+        <FormGroup>
           <Label htmlFor="fontFamily">Font Family</Label>
           <Select
             id="fontFamily"
             name="fontFamily"
-            value={settings.fontFamily}
+            defaultValue="'Zen Maru Gothic', sans-serif"
             onChange={handleChange}
           >
             {/* Western Fonts */}
@@ -428,6 +472,30 @@ function BannerGenerator({ settings, onSettingsChange }) {
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <input
                   type="checkbox"
+                  id="showTextOnBackground"
+                  name="showTextOnBackground"
+                  checked={settings.showTextOnBackground !== false}
+                  onChange={(e) => {
+                    onSettingsChange({ showTextOnBackground: e.target.checked });
+                  }}
+                  style={{ marginRight: '0.5rem' }}
+                />
+                <label 
+                  htmlFor="showTextOnBackground" 
+                  style={{ fontWeight: 'bold' }}
+                >
+                  Show Text on Background
+                </label>
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem' }}>
+                Uncheck to create a background without text, then add text later
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <input
+                  type="checkbox"
                   id="customBackgroundDimensions"
                   name="customBackgroundDimensions"
                   checked={settings.customBackgroundDimensions || false}
@@ -489,7 +557,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
                         type="range"
                         id="backgroundHeight"
                         name="backgroundHeight"
-                        min="200"
+                        min="120"
                         max="650"
                         value={settings.backgroundHeight || 400}
                         onChange={(e) => {

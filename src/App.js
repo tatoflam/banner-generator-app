@@ -37,6 +37,9 @@ function App() {
     fontFamily: 'Zen Maru Gothic',
     fontSize: 56,
     fontColor: '#fff1ff',
+    subtitle: '2025年 第2号',
+    subtitleFontSize: 24,
+    subtitleVisible: true,
     backgroundColor: '#fab4b4',
     shape: 'none',
     shapeColor: '#cccccc',
@@ -50,7 +53,8 @@ function App() {
     bannerScale: 100,
     bannerOffsetX: 0,
     bannerOffsetY: 0,
-    refinedImageUrl: null
+    refinedImageUrl: null,
+    showTextOnBackground: true
   });
   
   const bannerRef = useRef(null);

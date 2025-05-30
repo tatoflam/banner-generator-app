@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
-import { toPng } from 'html-to-image';
+// Import html-to-image dynamically when needed instead of at the top level
 
 const PreviewContainer = styled.div`
   background-color: #f5f5f5;
@@ -40,6 +40,11 @@ const BannerText = styled.div`
   text-align: center;
   transform: scale(${props => (props.$bannerScale || 100) / 100}) 
              translate(${props => props.$bannerOffsetX || 0}%, ${props => props.$bannerOffsetY || 0}%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   
   ${props => {
     const shapeStyles = [];
@@ -122,7 +127,7 @@ const RefinedImage = styled.img`
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* Changed from contain to cover to fill the entire area */
   z-index: 10; /* Ensure it's above other elements */
 `;
 
@@ -149,8 +154,12 @@ function BannerPreview({ settings, bannerRef }) {
           backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
           backgroundPosition: 'center',
           margin: '0',
-          padding: '0'
+          padding: '0',
+          border: 'none'
         },
+        // Remove any whitespace around the image
+        width: previewRef.current.clientWidth,
+        height: previewRef.current.clientHeight,
         // Suppress console errors during capture
         onclone: (clonedDoc) => {
           // Get the preview element in the cloned document
@@ -253,21 +262,52 @@ function BannerPreview({ settings, bannerRef }) {
         {settings.refinedImageUrl ? (
           <RefinedImage src={settings.refinedImageUrl} alt="Refined Banner" />
         ) : (
-          <BannerText
-            ref={bannerRef}
-            $fontFamily={settings.fontFamily}
-            $fontSize={settings.fontSize}
-            $fontColor={settings.fontColor}
-            $shape={settings.shape}
-            $shapeColor={settings.shapeColor}
-            $shapeImage={settings.shapeImage}
-            $shapeSize={settings.shapeSize}
-            $bannerScale={settings.bannerScale}
-            $bannerOffsetX={settings.bannerOffsetX}
-            $bannerOffsetY={settings.bannerOffsetY}
-          >
-            {settings.text}
-          </BannerText>
+          <>
+            {settings.showTextOnBackground !== false && (
+              <BannerText
+                ref={bannerRef}
+                $fontFamily={settings.fontFamily}
+                $fontSize={settings.fontSize}
+                $fontColor={settings.fontColor}
+                $shape={settings.shape}
+                $shapeColor={settings.shapeColor}
+                $shapeImage={settings.shapeImage}
+                $shapeSize={settings.shapeSize}
+                $bannerScale={settings.bannerScale}
+                $bannerOffsetX={settings.bannerOffsetX}
+                $bannerOffsetY={settings.bannerOffsetY}
+              >
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  padding: 0,
+                  margin: 0
+                }}>
+                  <div style={{ 
+                    padding: 0, 
+                    margin: 0,
+                    lineHeight: 1.1
+                  }}>
+                    {settings.text}
+                  </div>
+                  
+                  {settings.subtitleVisible && settings.subtitle && (
+                    <div style={{
+                      fontSize: `${settings.subtitleFontSize}px`,
+                      marginTop: `0.1rem`,
+                      padding: 0,
+                      lineHeight: 1.1,
+                      alignSelf: 'flex-end'
+                    }}>
+                      {settings.subtitle}
+                    </div>
+                  )}
+                </div>
+              </BannerText>
+            )}
+          </>
         )}
       </PreviewArea>
       
