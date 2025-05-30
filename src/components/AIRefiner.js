@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import OpenAI from 'openai';
 
 const RefinerContainer = styled.div`
   background-color: #f5f5f5;
@@ -64,181 +63,384 @@ const Label = styled.label`
   font-weight: bold;
 `;
 
-function AIRefiner({ logoRef, onRefinementComplete }) {
+function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
   const [apiKey, setApiKey] = useState('');
-  const [userPrompt, setUserPrompt] = useState('Enhance this image by making it more professional and polished. Maintain the original style and colors but improve the overall quality and visual appeal. Keep the text and its effect.');
+  const [userPrompt, setUserPrompt] = useState('Enhance this image by making it more artistic. Maintain the original style and colors but dramatically improve the overall quality and visual appeal. Keep the text with some modifications.');
   const [isRefining, setIsRefining] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
   const refineWithAI = async () => {
     if (!apiKey) {
-      setMessage('Please enter your OpenAI API key');
+      setMessage('Please enter your Stability AI API key');
       setMessageType('error');
       return;
     }
 
     try {
       setIsRefining(true);
-      setMessage('Refining your logo with AI...');
+      setMessage('Refining your banner with AI...');
       setMessageType('info');
 
-      // Get the logo element - either from the ref or from the preview container
-      let logoElement = logoRef.current;
+      console.log('Starting AI refinement process');
+      console.log('Banner ref:', bannerRef);
       
-      // If logoRef is not available (which happens when a refined image is already displayed),
-      // we need to get the preview container instead
-      if (!logoElement) {
-        // Find the preview container by its class or structure
-        const previewContainer = document.querySelector('.preview-area');
-        if (previewContainer) {
-          logoElement = previewContainer;
-        } else {
-          throw new Error('Logo element not found');
-        }
+      // Always get the preview area container for consistent dimensions
+      const previewContainer = document.querySelector('.preview-area');
+      console.log('Found preview container:', previewContainer);
+      
+      if (!previewContainer) {
+        console.error('Preview container not found');
+        throw new Error('Preview container not found');
       }
+      
+      // Get the actual dimensions from the settings if available
+      const customDimensions = previewContainer.getAttribute('style') && 
+                              previewContainer.getAttribute('style').includes('width') && 
+                              previewContainer.getAttribute('style').includes('height');
+      
+      console.log('Custom dimensions detected:', customDimensions);
+      
+      // Use the preview container for capturing
+      let bannerElement = previewContainer;
+      
+      console.log('Using banner element:', bannerElement);
+      console.log('Banner element style:', bannerElement.getAttribute('style'));
+      console.log('Banner element computed style width:', window.getComputedStyle(bannerElement).width);
+      console.log('Banner element computed style height:', window.getComputedStyle(bannerElement).height);
 
       // Import html-to-image dynamically
+      console.log('Importing html-to-image');
       const htmlToImage = await import('html-to-image');
       
-      // Capture the logo as a data URL
-      const dataUrl = await htmlToImage.toPng(logoElement);
+      // Capture the banner as a data URL - ensure we capture exactly what's shown in the preview
+      console.log('Capturing banner as PNG');
       
-      // Get the dimensions of the logo element
-      const width = logoElement.clientWidth;
-      const height = logoElement.clientHeight;
+      // Configure the capture options to ensure we get the exact visual representation
+      // Set skipFonts to true to avoid font loading errors
+      const captureOptions = {
+        quality: 1.0,
+        pixelRatio: window.devicePixelRatio,
+        skipFonts: true, // Skip loading fonts to prevent resource errors
+        // Ensure background images and colors are captured
+        backgroundColor: settings.backgroundColor || '#ffffff',
+        style: {
+          backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
+          backgroundPosition: 'center',
+          margin: '0',
+          padding: '0'
+        },
+        // Suppress console errors during capture
+        onclone: (clonedDoc) => {
+          // Get the preview element in the cloned document
+          const previewElement = clonedDoc.querySelector('.preview-area');
+          
+          if (previewElement) {
+            // Remove any margins or padding that might cause shifting
+            previewElement.style.margin = '0';
+            previewElement.style.padding = '0';
+            
+            // Ensure content is centered
+            previewElement.style.display = 'flex';
+            previewElement.style.justifyContent = 'center';
+            previewElement.style.alignItems = 'center';
+            
+            // Ensure text is properly centered
+            const textElement = previewElement.querySelector('div');
+            if (textElement) {
+              textElement.style.margin = '0';
+              textElement.style.padding = '0';
+              textElement.style.textAlign = 'center';
+            }
+            
+            // Ensure refined image is properly positioned
+            const imgElement = previewElement.querySelector('img');
+            if (imgElement) {
+              imgElement.style.margin = '0';
+              imgElement.style.padding = '0';
+              imgElement.style.objectFit = 'contain';
+              imgElement.style.width = '100%';
+              imgElement.style.height = '100%';
+            }
+          }
+          
+          // Add a style to ensure text renders correctly even with skipFonts: true
+          const style = clonedDoc.createElement('style');
+          style.innerHTML = `
+            * {
+              font-family: ${settings.fontFamily || 'Arial, sans-serif'} !important;
+              box-sizing: border-box;
+            }
+            .preview-area {
+              margin: 0 !important;
+              padding: 0 !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: center !important;
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+        }
+      };
       
-      // Analyze the logo to extract key characteristics
-      // This will help us generate a similar logo with the same style
-      const logoText = logoElement.innerText || 'Your Logo';
-      const computedStyle = window.getComputedStyle(logoElement);
+      // Temporarily suppress console errors
+      const originalConsoleError = console.error;
+      console.error = (msg) => {
+        // Only log errors that aren't related to font loading
+        if (!msg || (typeof msg === 'string' && !msg.includes('fonts.gstatic.com'))) {
+          originalConsoleError(msg);
+        }
+      };
+      
+      let dataUrl;
+      try {
+        // Capture the preview area exactly as it appears
+        dataUrl = await htmlToImage.toPng(bannerElement, captureOptions);
+        console.log('Banner captured as data URL:', dataUrl.substring(0, 50) + '...');
+      } finally {
+        // Restore console.error
+        console.error = originalConsoleError;
+      }
+      
+      // Debug: Log the banner element and its contents
+      console.log('Banner element:', bannerElement);
+      console.log('Banner element innerHTML:', bannerElement.innerHTML);
+      console.log('Banner element children:', bannerElement.children);
+      
+      // Get the dimensions of the banner element
+      let width, height;
+      
+      // If settings are available and custom dimensions are enabled, use those dimensions
+      if (settings && settings.customBackgroundDimensions) {
+        width = settings.backgroundWidth;
+        height = settings.backgroundHeight;
+        console.log('Using custom dimensions from settings:', width, 'x', height);
+      } else {
+        // Otherwise use the client dimensions
+        width = bannerElement.clientWidth;
+        height = bannerElement.clientHeight;
+        console.log('Using client dimensions:', width, 'x', height);
+      }
+      
+      console.log('Banner dimensions:', width, 'x', height);
+      
+      // Analyze the banner to extract key characteristics
+      // This will help us generate a similar banner with the same style
+      const bannerText = bannerElement.innerText || 'Your Banner';
+      const computedStyle = window.getComputedStyle(bannerElement);
       const fontFamily = computedStyle.fontFamily || 'Arial';
       const fontSize = computedStyle.fontSize || '48px';
       const fontColor = computedStyle.color || 'black';
       const backgroundColor = computedStyle.backgroundColor || 'transparent';
       
-      // Create a detailed description of the current logo for the AI
-      const logoDescription = `
-        The current logo has text "${logoText}" with font family "${fontFamily}" 
+      // Create a detailed description of the current banner for the AI
+      const bannerDescription = `
+        The current banner has text "${bannerText}" with font family "${fontFamily}" 
         at size "${fontSize}" and color "${fontColor}" on a "${backgroundColor}" background.
-        The logo dimensions are ${width}x${height} pixels.
+        The banner dimensions are ${width}x${height} pixels.
         Please create an enhanced version of this image that maintains the same text and overall style,
         but with improved visual quality, better typography, and more attractive appearance.
       `;
+      console.log('Banner description:', bannerDescription);
       
-      // Initialize OpenAI client
-      const openai = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true // Note: In production, you should use a backend proxy
-      });
-
-      // System prompt to guide the AI behavior
-      const systemPrompt = "You are an expert illust designer. Edit the provided image according to the user's instructions while preserving the original style and dimensions. Focus on enhancing the existing design rather than creating something completely new except the text and its effect.";
+      // Combine the user prompt and banner description
+      const enhancedPrompt = `${userPrompt}\n\nBanner details: ${bannerDescription}`;
+      console.log('Enhanced prompt:', enhancedPrompt);
+      console.log('User prompt being used:', userPrompt);
       
-      // Combine system prompt with user prompt
-      const fullPrompt = `${systemPrompt}\n\nUser request: ${userPrompt}`;
+      // Convert data URL to Blob
+      const fetchResponse = await fetch(dataUrl);
+      const blob = await fetchResponse.blob();
       
-      // Determine the appropriate size for the API
-      // OpenAI API requires specific sizes
-      let apiSize;
-      if (Math.max(width, height) <= 512) {
-        apiSize = "512x512";
-      } else {
-        apiSize = "1024x1024";
-      }
+      // Create a File object from the Blob
+      const imageFile = new File([blob], 'banner.png', { type: 'image/png' });
+      console.log('Created image file from data URL:', imageFile);
       
-      console.log('Sending request to OpenAI with:', {
-        logoDescription,
-        apiSize,
-        promptLength: fullPrompt.length
-      });
-      
-      // Call OpenAI API to generate a new logo based on the description and user prompt
-      try {
-        // Combine the system prompt, user prompt, and logo description
-        const enhancedPrompt = `${fullPrompt}\n\nLogo details: ${logoDescription}`;
+      // Function to make API request with retry logic
+      const makeRequestWithRetry = async (retries = 3, delay = 2000) => {
+        // Add a timeout promise to handle potential hanging requests
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timed out')), 30000); // 30 second timeout
+        });
         
-        // Function to make API request with retry logic
-        const makeRequestWithRetry = async (retries = 3, delay = 2000) => {
-          // Add a timeout promise to handle potential hanging requests
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Request timed out')), 30000); // 30 second timeout
-          });
-          
-          for (let attempt = 0; attempt < retries; attempt++) {
-            try {
-              // Use the OpenAI SDK to generate a new image with timeout
-              const generateImagePromise = openai.images.generate({
-                prompt: enhancedPrompt,
-                n: 1,
-                size: apiSize,
-                response_format: "url",
+        for (let attempt = 0; attempt < retries; attempt++) {
+          try {
+            // Create FormData for the API request
+            const formData = new FormData();
+            formData.append('image', imageFile);
+            formData.append('text_prompts[0][text]', enhancedPrompt);
+            formData.append('text_prompts[0][weight]', '1.0');
+            
+            // Log the form data being sent
+            console.log('Form data being sent to API:');
+            console.log('- text_prompts[0][text]:', enhancedPrompt);
+            console.log('- text_prompts[0][weight]:', '1.0');
+            
+            // Create headers with API key
+            const headers = new Headers();
+            headers.append('Authorization', `Bearer ${apiKey}`);
+            headers.append('Accept', 'application/json');
+            
+            // Create request options
+            const requestOptions = {
+              method: 'POST',
+              headers: headers,
+              body: formData,
+              redirect: 'follow'
+            };
+            
+            console.log('Sending request to Stability AI API (attempt', attempt + 1, ')');
+            
+            // Make the fetch request with timeout
+            const fetchPromise = fetch('https://api.stability.ai/v2beta/stable-image/edit/erase', requestOptions)
+              .then(response => {
+                if (!response.ok) {
+                  return response.text().then(text => {
+                    throw new Error(`API Error: ${response.status} - ${text}`);
+                  });
+                }
+                return response.json();
               });
-              
-              // Race the API call against the timeout
-              return await Promise.race([generateImagePromise, timeoutPromise]);
-            } catch (error) {
-              // If this is the last attempt, throw the error
-              if (attempt === retries - 1) {
-                throw error;
-              }
-              
-              // If the error is due to insufficient resources, wait and retry
-              if (error.message && error.message.includes('ERR_INSUFFICIENT_RESOURCES')) {
-                const retryMessage = `Attempt ${attempt + 1} failed with insufficient resources. Retrying in ${delay/1000} seconds...`;
-                console.log(retryMessage);
-                // Update the status message to inform the user about the retry
-                setMessage(`Retrying... ${retryMessage}`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                // Exponential backoff - double the delay for the next attempt
-                delay *= 2;
-              } else {
-                // For other errors, don't retry
-                throw error;
-              }
+            
+            // Race the API call against the timeout
+            const response = await Promise.race([fetchPromise, timeoutPromise]);
+            console.log('Stability AI API response:', response);
+            return response;
+          } catch (error) {
+            console.error('API request error:', error);
+            
+            // If this is the last attempt, throw the error
+            if (attempt === retries - 1) {
+              throw error;
+            }
+            
+            // If the error is due to rate limiting or server issues, wait and retry
+            if (error.message && (
+                error.message.includes('429') || 
+                error.message.includes('rate limit') ||
+                error.message.includes('500') ||
+                error.message.includes('503')
+              )) {
+              const retryMessage = `Attempt ${attempt + 1} failed. Retrying in ${delay/1000} seconds...`;
+              console.log(retryMessage);
+              // Update the status message to inform the user about the retry
+              setMessage(`Retrying... ${retryMessage}`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              // Exponential backoff - double the delay for the next attempt
+              delay *= 2;
+            } else {
+              // For other errors, don't retry
+              throw error;
             }
           }
-        };
-        
-        // Make the request with retry logic
-        const response = await makeRequestWithRetry();
-        
-        console.log('OpenAI API response:', response);
-        
-        // Get the refined image URL
-        const refinedImageUrl = response.data[0].url;
-        
-        // Pass the refined image URL to the parent component
-        onRefinementComplete(refinedImageUrl);
-        
-        setMessage('Logo successfully refined!');
-        setMessageType('success');
-      } catch (apiError) {
-        console.error('OpenAI API Error:', apiError);
-        let errorMessage = apiError.message || 'Failed to refine logo';
-        
-        // Check for specific API errors
-        if (apiError.response) {
-          errorMessage = `API Error: ${apiError.response.status} - ${JSON.stringify(apiError.response.data)}`;
         }
-        
-        // Handle specific error types
-        if (apiError.message && apiError.message.includes('ERR_INSUFFICIENT_RESOURCES')) {
-          errorMessage = 'Insufficient resources error. This may be due to high server load or rate limiting. Please try again later.';
-        } else if (apiError.message && apiError.message.includes('timeout')) {
-          errorMessage = 'The request timed out. Please check your internet connection and try again.';
-        } else if (apiError.message && apiError.message.includes('network')) {
-          errorMessage = 'Network error. Please check your internet connection and try again.';
-        }
-        
-        setMessage(`Error: ${errorMessage}`);
-        setMessageType('error');
-        console.error('Detailed error:', apiError);
+      };
+      
+      // Make the request with retry logic
+      const response = await makeRequestWithRetry();
+      
+      // Get the refined image URL from the response
+      // The structure of the response depends on the Stability AI API
+      console.log('Parsing Stability AI API response:', JSON.stringify(response));
+      
+      // Check for different possible response structures
+      let refinedImageUrl;
+      
+      if (response && response.artifacts && response.artifacts.length > 0) {
+        // Standard Stability AI v1 response format
+        const base64Image = response.artifacts[0].base64;
+        refinedImageUrl = `data:image/png;base64,${base64Image}`;
+        console.log('Found image in artifacts array (base64 format)');
+      } else if (response && response.images && response.images.length > 0) {
+        // URL format response
+        refinedImageUrl = response.images[0].url;
+        console.log('Found image in images array (URL format)');
+      } else if (response && response.output && response.output.length > 0) {
+        // Another possible format
+        refinedImageUrl = response.output[0];
+        console.log('Found image in output array');
+      } else if (response && response.result && response.result.images && response.result.images.length > 0) {
+        // Yet another possible format
+        refinedImageUrl = response.result.images[0].url || `data:image/png;base64,${response.result.images[0].base64}`;
+        console.log('Found image in result.images array');
+      } else if (response && typeof response === 'string' && (response.startsWith('http') || response.startsWith('data:'))) {
+        // Direct URL or data URL response
+        refinedImageUrl = response;
+        console.log('Response is directly a URL or data URL');
+      } else if (response && response.image && response.finish_reason) {
+        // New Stability AI v2 response format with direct image property
+        const base64Image = response.image;
+        refinedImageUrl = `data:image/png;base64,${base64Image}`;
+        console.log('Found image in direct image property (base64 format)');
+      } else {
+        console.error('Unexpected API response structure:', response);
+        throw new Error('No image data received from Stability AI API. Unexpected response structure.');
       }
-
+      console.log('Received refined image URL:', refinedImageUrl);
+      
+      // Test if the image can be loaded (to catch CORS issues early)
+      try {
+        console.log('Testing if refined image can be loaded...');
+        const testImg = new Image();
+        testImg.crossOrigin = 'Anonymous';
+        
+        await new Promise((resolve, reject) => {
+          testImg.onload = () => {
+            console.log('Refined image loaded successfully in test');
+            resolve();
+          };
+          testImg.onerror = (e) => {
+            console.error('Error loading refined image in test:', e);
+            // We'll still continue even if there's an error, as the actual rendering might work
+            resolve();
+          };
+          testImg.src = refinedImageUrl;
+        });
+      } catch (testError) {
+        console.warn('Test loading of refined image failed, but continuing:', testError);
+      }
+      
+      // Pass the refined image URL to the parent component
+      console.log('Calling onRefinementComplete with refined image URL');
+      
+      // Ensure the refinedImageUrl is properly formatted
+      if (refinedImageUrl && !refinedImageUrl.startsWith('data:image/') && !refinedImageUrl.startsWith('http')) {
+        // If it's just a base64 string without the data URL prefix, add it
+        refinedImageUrl = `data:image/png;base64,${refinedImageUrl}`;
+        console.log('Added data URL prefix to refined image URL');
+      }
+      
+      // Create a test image to verify the URL works
+      const verifyImg = new Image();
+      verifyImg.onload = () => {
+        console.log('Verified refined image URL works, updating state');
+        // Only update the state if the image loads successfully
+        onRefinementComplete(refinedImageUrl);
+      };
+      verifyImg.onerror = (e) => {
+        console.error('Error verifying refined image URL:', e);
+        alert('The refined image could not be loaded. Please try again.');
+        setMessage('Error: The refined image could not be loaded. Please try again.');
+        setMessageType('error');
+      };
+      verifyImg.src = refinedImageUrl;
+      
+      setMessage('Banner successfully refined!');
+      setMessageType('success');
     } catch (error) {
-      console.error('Error refining logo:', error);
-      setMessage(`Error: ${error.message || 'Failed to refine logo'}`);
+      console.error('Error refining banner:', error);
+      let errorMessage = error.message || 'Failed to refine banner';
+      
+      // Handle specific error types
+      if (errorMessage.includes('429')) {
+        errorMessage = 'Rate limit exceeded. Please try again later.';
+      } else if (errorMessage.includes('timeout')) {
+        errorMessage = 'The request timed out. Please check your internet connection and try again.';
+      } else if (errorMessage.includes('network')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      }
+      
+      setMessage(`Error: ${errorMessage}`);
       setMessageType('error');
     } finally {
       setIsRefining(false);
@@ -247,14 +449,14 @@ function AIRefiner({ logoRef, onRefinementComplete }) {
 
   return (
     <RefinerContainer>
-      <h2>AI Logo Refinement</h2>
-      <p>Use OpenAI to enhance and refine your logo design.</p>
+      <h2>AI Banner Refinement</h2>
+      <p>Use Stability AI to enhance and refine your banner design.</p>
       
-      <Label htmlFor="apiKey">OpenAI API Key</Label>
+      <Label htmlFor="apiKey">Stability AI API Key</Label>
       <ApiKeyInput
         id="apiKey"
         type="password"
-        placeholder="Enter your OpenAI API key"
+        placeholder="Enter your Stability AI API key"
         value={apiKey}
         onChange={(e) => setApiKey(e.target.value)}
       />
@@ -262,9 +464,12 @@ function AIRefiner({ logoRef, onRefinementComplete }) {
       <Label htmlFor="userPrompt">Refinement Instructions</Label>
       <PromptTextarea
         id="userPrompt"
-        placeholder="Describe how you want the AI to refine your logo..."
+        placeholder="Describe how you want the AI to refine your banner..."
         value={userPrompt}
-        onChange={(e) => setUserPrompt(e.target.value)}
+        onChange={(e) => {
+          console.log('Updating user prompt to:', e.target.value);
+          setUserPrompt(e.target.value);
+        }}
       />
       
       <Button 

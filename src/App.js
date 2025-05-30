@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import LogoGenerator from './components/LogoGenerator';
-import LogoPreview from './components/LogoPreview';
+import BannerGenerator from './components/BannerGenerator';
+import BannerPreview from './components/BannerPreview';
 import AIRefiner from './components/AIRefiner';
 
 const AppContainer = styled.div`
@@ -32,7 +32,7 @@ const RightColumn = styled.div`
 `;
 
 function App() {
-  const [logoSettings, setLogoSettings] = useState({
+  const [bannerSettings, setBannerSettings] = useState({
     text: 'すっぱくろ',
     fontFamily: 'Zen Maru Gothic',
     fontSize: 56,
@@ -47,20 +47,20 @@ function App() {
     customBackgroundDimensions: true,
     backgroundWidth: 360,
     backgroundHeight: 120,
-    logoScale: 100,
-    logoOffsetX: 0,
-    logoOffsetY: 0,
+    bannerScale: 100,
+    bannerOffsetX: 0,
+    bannerOffsetY: 0,
     refinedImageUrl: null
   });
   
-  const logoRef = useRef(null);
+  const bannerRef = useRef(null);
 
   const handleSettingsChange = (newSettings) => {
-    setLogoSettings({ ...logoSettings, ...newSettings });
+    setBannerSettings({ ...bannerSettings, ...newSettings });
   };
   
   const handleRefinementComplete = (refinedImageUrl) => {
-    setLogoSettings({ ...logoSettings, refinedImageUrl });
+    setBannerSettings({ ...bannerSettings, refinedImageUrl });
   };
 
   return (
@@ -70,18 +70,19 @@ function App() {
         <p>Create your custom banner in seconds</p>
       </Header>
       <MainContent>
-        <LogoGenerator 
-          settings={logoSettings} 
+        <BannerGenerator 
+          settings={bannerSettings} 
           onSettingsChange={handleSettingsChange} 
         />
         <RightColumn>
-          <LogoPreview 
-            settings={logoSettings} 
-            logoRef={logoRef}
+          <BannerPreview 
+            settings={bannerSettings} 
+            bannerRef={bannerRef}
           />
           <AIRefiner 
-            logoRef={logoRef} 
+            bannerRef={bannerRef} 
             onRefinementComplete={handleRefinementComplete} 
+            settings={bannerSettings}
           />
         </RightColumn>
       </MainContent>

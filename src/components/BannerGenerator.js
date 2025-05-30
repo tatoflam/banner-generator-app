@@ -133,7 +133,7 @@ const ColorInput = styled.input`
   cursor: pointer;
 `;
 
-function LogoGenerator({ settings, onSettingsChange }) {
+function BannerGenerator({ settings, onSettingsChange }) {
   const [imageOptions, setImageOptions] = useState([]);
   const [expandedSections, setExpandedSections] = useState({
     text: true,
@@ -178,7 +178,7 @@ function LogoGenerator({ settings, onSettingsChange }) {
 
   return (
     <GeneratorContainer>
-      <h2>Logo Settings</h2>
+      <h2>Banner Settings</h2>
       
       <FormSection>
         <SectionHeader onClick={() => toggleSection('text')}>
@@ -189,7 +189,7 @@ function LogoGenerator({ settings, onSettingsChange }) {
         </SectionHeader>
         <SectionContent $isExpanded={expandedSections.text}>
         <FormGroup>
-          <Label htmlFor="text">Logo Text</Label>
+          <Label htmlFor="text">Banner Text</Label>
           <Input
             type="text"
             id="text"
@@ -520,53 +520,53 @@ function LogoGenerator({ settings, onSettingsChange }) {
       {expandedSections.position && (
         <div style={{ padding: '15px', marginBottom: '20px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
           <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="logoScale" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Logo Scale</Label>
+            <Label htmlFor="bannerScale" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Banner Scale</Label>
             <SliderContainer>
               <Input
                 type="range"
-                id="logoScale"
-                name="logoScale"
+                id="bannerScale"
+                name="bannerScale"
                 min="50"
                 max="150"
-                value={settings.logoScale || 100}
+                value={settings.bannerScale || 100}
                 onChange={handleChange}
                 style={{ width: '100%' }}
               />
-              <SliderValue>{settings.logoScale || 100}%</SliderValue>
+              <SliderValue>{settings.bannerScale || 100}%</SliderValue>
             </SliderContainer>
           </FormGroup>
         
           <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="logoOffsetX" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Horizontal Position</Label>
+            <Label htmlFor="bannerOffsetX" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Horizontal Position</Label>
             <SliderContainer>
               <Input
                 type="range"
-                id="logoOffsetX"
-                name="logoOffsetX"
+                id="bannerOffsetX"
+                name="bannerOffsetX"
                 min="-50"
                 max="50"
-                value={settings.logoOffsetX || 0}
+                value={settings.bannerOffsetX || 0}
                 onChange={handleChange}
                 style={{ width: '100%' }}
               />
-              <SliderValue>{settings.logoOffsetX || 0}</SliderValue>
+              <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
             </SliderContainer>
           </FormGroup>
           
           <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="logoOffsetY" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Vertical Position</Label>
+            <Label htmlFor="bannerOffsetY" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Vertical Position</Label>
             <SliderContainer>
               <Input
                 type="range"
-                id="logoOffsetY"
-                name="logoOffsetY"
+                id="bannerOffsetY"
+                name="bannerOffsetY"
                 min="-50"
                 max="50"
-                value={settings.logoOffsetY || 0}
+                value={settings.bannerOffsetY || 0}
                 onChange={handleChange}
                 style={{ width: '100%' }}
               />
-              <SliderValue>{settings.logoOffsetY || 0}</SliderValue>
+              <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
             </SliderContainer>
           </FormGroup>
         </div>
@@ -575,4 +575,4 @@ function LogoGenerator({ settings, onSettingsChange }) {
   );
 }
 
-export default LogoGenerator;
+export default BannerGenerator;
