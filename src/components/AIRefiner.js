@@ -274,61 +274,19 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         backgroundColor: settings.backgroundColor || '#ffffff',
         style: {
           backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
-          backgroundPosition: 'center',
-          margin: '0',
-          padding: '0',
-          border: 'none'
+          backgroundPosition: 'center'
         },
-        // Remove any whitespace around the image
+        // Use the exact dimensions of the banner element
         width: bannerElement.clientWidth,
         height: bannerElement.clientHeight,
         // Suppress console errors during capture
         onclone: (clonedDoc) => {
-          // Get the preview element in the cloned document
-          const previewElement = clonedDoc.querySelector('.preview-area');
-          
-          if (previewElement) {
-            // Remove any margins or padding that might cause shifting
-            previewElement.style.margin = '0';
-            previewElement.style.padding = '0';
-            
-            // Ensure content is centered
-            previewElement.style.display = 'flex';
-            previewElement.style.justifyContent = 'center';
-            previewElement.style.alignItems = 'center';
-            
-            // Ensure text is properly centered
-            const textElement = previewElement.querySelector('div');
-            if (textElement) {
-              textElement.style.margin = '0';
-              textElement.style.padding = '0';
-              textElement.style.textAlign = 'center';
-            }
-            
-            // Ensure refined image is properly positioned
-            const imgElement = previewElement.querySelector('img');
-            if (imgElement) {
-              imgElement.style.margin = '0';
-              imgElement.style.padding = '0';
-              imgElement.style.objectFit = 'contain';
-              imgElement.style.width = '100%';
-              imgElement.style.height = '100%';
-            }
-          }
-          
           // Add a style to ensure text renders correctly even with skipFonts: true
           const style = clonedDoc.createElement('style');
           style.innerHTML = `
             * {
               font-family: ${settings.fontFamily || 'Arial, sans-serif'} !important;
               box-sizing: border-box;
-            }
-            .preview-area {
-              margin: 0 !important;
-              padding: 0 !important;
-              display: flex !important;
-              justify-content: center !important;
-              align-items: center !important;
             }
           `;
           clonedDoc.head.appendChild(style);
@@ -626,8 +584,58 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       const verifyImg = new Image();
       verifyImg.onload = () => {
         console.log('Verified refined image URL works, updating state');
+        
+        // Create a canvas to resize the image to match the preview dimensions
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Get the preview area dimensions
+        const previewArea = document.querySelector('.preview-area');
+        if (!previewArea) {
+          console.error('Preview area not found');
+          onRefinementComplete(refinedImageUrl);
+          return;
+        }
+        
+        const width = previewArea.clientWidth;
+        const height = previewArea.clientHeight;
+        
+        // Set canvas dimensions to match the preview area
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw the image on the canvas, maintaining aspect ratio
+        const imgAspect = verifyImg.width / verifyImg.height;
+        const canvasAspect = width / height;
+        
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (imgAspect > canvasAspect) {
+          // Image is wider than canvas
+          drawHeight = height;
+          drawWidth = height * imgAspect;
+          offsetX = (width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Image is taller than canvas
+          drawWidth = width;
+          drawHeight = width / imgAspect;
+          offsetX = 0;
+          offsetY = (height - drawHeight) / 2;
+        }
+        
+        // Fill the canvas with the background color
+        ctx.fillStyle = settings.backgroundColor || '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw the image centered on the canvas
+        ctx.drawImage(verifyImg, offsetX, offsetY, drawWidth, drawHeight);
+        
+        // Convert canvas to data URL
+        const resizedImageUrl = canvas.toDataURL('image/png');
+        
         // Only update the state if the image loads successfully
-        onRefinementComplete(refinedImageUrl);
+        onRefinementComplete(resizedImageUrl);
       };
       verifyImg.onerror = (e) => {
         console.error('Error verifying refined image URL:', e);

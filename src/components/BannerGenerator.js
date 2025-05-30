@@ -7,7 +7,8 @@ const GeneratorContainer = styled.div`
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 980px;
+  height: 80vh;
+  max-height: 980px;
   overflow-y: auto;
   scrollbar-width: thin;
   
@@ -27,6 +28,11 @@ const GeneratorContainer = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    height: 85vh;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -38,6 +44,10 @@ const FormSection = styled.div`
   border-bottom: 1px solid #ddd;
   padding-bottom: 0.25rem;
   width: 100%;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const SectionHeader = styled.div`
@@ -76,6 +86,10 @@ const BackgroundPreviewContainer = styled.div`
   gap: 0.5rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 `;
 
 const BackgroundPreview = styled.div`
@@ -181,205 +195,155 @@ function BannerGenerator({ settings, onSettingsChange }) {
       <h2>Banner Settings</h2>
       
       {/* 1. Background */}
-      <div style={{ marginBottom: '20px', borderBottom: '1px solid #ddd' }}>
-        <div 
-          style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            cursor: 'pointer',
-            padding: '0.5rem 0'
-          }}
-          onClick={() => toggleSection('background')}
-        >
-          <h3 style={{ margin: '0', fontSize: '1.2rem', color: '#333' }}>Background</h3>
-          <span style={{ fontSize: '1rem', color: '#666' }}>
+      <FormSection>
+        <SectionHeader onClick={() => toggleSection('background')}>
+          <SectionTitle>Background</SectionTitle>
+          <ChevronIcon>
             {expandedSections.background ? <FaChevronUp /> : <FaChevronDown />}
-          </span>
-        </div>
+          </ChevronIcon>
+        </SectionHeader>
         
-        {expandedSections.background && (
-          <div style={{ marginTop: '0.5rem', paddingBottom: '1rem' }}>
-            <div style={{ marginBottom: '1rem' }}>
-              <label 
-                htmlFor="backgroundColor" 
-                style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-              >
-                Background Color
-              </label>
-              <input
-                type="color"
-                id="backgroundColor"
-                name="backgroundColor"
-                value={settings.backgroundColor}
-                onChange={handleChange}
-                style={{ width: '100%', height: '40px', cursor: 'pointer' }}
+        <SectionContent $isExpanded={expandedSections.background}>
+          <FormGroup>
+            <Label htmlFor="backgroundColor">Background Color</Label>
+            <ColorInput
+              type="color"
+              id="backgroundColor"
+              name="backgroundColor"
+              value={settings.backgroundColor}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          
+          <FormGroup>
+            <Label>Background Image</Label>
+            <BackgroundPreviewContainer>
+              {imageOptions.map((image, index) => (
+                <BackgroundPreview 
+                  key={index}
+                  src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
+                  selected={settings.backgroundImage === image.path}
+                  onClick={() => handleBackgroundSelect(image.path)}
+                  title={image.name}
+                />
+              ))}
+            </BackgroundPreviewContainer>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="backgroundSize">Background Size (Crop)</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="backgroundSize"
+                name="backgroundSize"
+                min="100"
+                max="200"
+                value={settings.backgroundSize || 100}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  onSettingsChange({ backgroundSize: value });
+                }}
               />
+              <SliderValue>{settings.backgroundSize || 100}%</SliderValue>
+            </SliderContainer>
+          </FormGroup>
+          
+          <FormGroup>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <input
+                type="checkbox"
+                id="showTextOnBackground"
+                name="showTextOnBackground"
+                checked={settings.showTextOnBackground !== false}
+                onChange={(e) => {
+                  onSettingsChange({ showTextOnBackground: e.target.checked });
+                }}
+                style={{ marginRight: '0.5rem' }}
+              />
+              <Label htmlFor="showTextOnBackground">Show Text on Background</Label>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem' }}>
+              Uncheck to create a background without text, then add text later
+            </div>
+          </FormGroup>
+          
+          <FormGroup>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <input
+                type="checkbox"
+                id="customBackgroundDimensions"
+                name="customBackgroundDimensions"
+                checked={settings.customBackgroundDimensions || false}
+                onChange={(e) => {
+                  // When enabling custom dimensions, reset background size to 100%
+                  if (e.target.checked) {
+                    onSettingsChange({ 
+                      customBackgroundDimensions: e.target.checked,
+                      backgroundSize: 100
+                    });
+                  } else {
+                    onSettingsChange({ customBackgroundDimensions: e.target.checked });
+                  }
+                }}
+                style={{ marginRight: '0.5rem' }}
+              />
+              <Label htmlFor="customBackgroundDimensions">Custom Background Dimensions</Label>
             </div>
             
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                Background Image
-              </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {imageOptions.map((image, index) => (
-                  <div 
-                    key={index}
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      backgroundImage: image.path ? `url(${image.path})` : 'none',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      border: settings.backgroundImage === image.path ? '2px solid #4CAF50' : '1px solid #ddd',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                    onClick={() => handleBackgroundSelect(image.path)}
-                    title={image.name}
+            {settings.customBackgroundDimensions && (
+              <div style={{ marginTop: '0.5rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label 
+                    htmlFor="backgroundWidth" 
+                    style={{ display: 'block', marginBottom: '0.5rem' }}
                   >
-                    {!image.path && <div style={{ color: '#999' }}>None</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div style={{ marginBottom: '1rem' }}>
-              <label 
-                htmlFor="backgroundSize" 
-                style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-              >
-                Background Size (Crop)
-              </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="range"
-                  id="backgroundSize"
-                  name="backgroundSize"
-                  min="100"
-                  max="200"
-                  value={settings.backgroundSize || 100}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10);
-                    onSettingsChange({ backgroundSize: value });
-                  }}
-                  style={{ width: '100%' }}
-                />
-                <span style={{ minWidth: '40px', textAlign: 'right' }}>
-                  {settings.backgroundSize || 100}%
-                </span>
-              </div>
-            </div>
-            
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <input
-                  type="checkbox"
-                  id="showTextOnBackground"
-                  name="showTextOnBackground"
-                  checked={settings.showTextOnBackground !== false}
-                  onChange={(e) => {
-                    onSettingsChange({ showTextOnBackground: e.target.checked });
-                  }}
-                  style={{ marginRight: '0.5rem' }}
-                />
-                <label 
-                  htmlFor="showTextOnBackground" 
-                  style={{ fontWeight: 'bold' }}
-                >
-                  Show Text on Background
-                </label>
-              </div>
-              <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem' }}>
-                Uncheck to create a background without text, then add text later
-              </div>
-            </div>
-            
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <input
-                  type="checkbox"
-                  id="customBackgroundDimensions"
-                  name="customBackgroundDimensions"
-                  checked={settings.customBackgroundDimensions || false}
+                    Width (px): {settings.backgroundWidth || 400}
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="range"
+                      id="backgroundWidth"
+                      name="backgroundWidth"
+                      min="200"
+                      max="650"
+                      value={settings.backgroundWidth || 400}
                       onChange={(e) => {
-                        // When enabling custom dimensions, reset background size to 100%
-                        if (e.target.checked) {
-                          onSettingsChange({ 
-                            customBackgroundDimensions: e.target.checked,
-                            backgroundSize: 100
-                          });
-                        } else {
-                          onSettingsChange({ customBackgroundDimensions: e.target.checked });
-                        }
+                        const value = parseInt(e.target.value, 10);
+                        onSettingsChange({ backgroundWidth: value });
                       }}
-                  style={{ marginRight: '0.5rem' }}
-                />
-                <label 
-                  htmlFor="customBackgroundDimensions" 
-                  style={{ fontWeight: 'bold' }}
-                >
-                  Custom Background Dimensions
-                </label>
-              </div>
-              
-              {settings.customBackgroundDimensions && (
-                <div style={{ marginTop: '0.5rem' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label 
-                      htmlFor="backgroundWidth" 
-                      style={{ display: 'block', marginBottom: '0.5rem' }}
-                    >
-                      Width (px): {settings.backgroundWidth || 400}
-                    </label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input
-                        type="range"
-                        id="backgroundWidth"
-                        name="backgroundWidth"
-                        min="200"
-                        max="650"
-                        value={settings.backgroundWidth || 400}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value, 10);
-                          onSettingsChange({ backgroundWidth: value });
-                        }}
-                        style={{ width: '100%' }}
-                      />
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label 
-                      htmlFor="backgroundHeight" 
-                      style={{ display: 'block', marginBottom: '0.5rem' }}
-                    >
-                      Height (px): {settings.backgroundHeight || 400}
-                    </label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input
-                        type="range"
-                        id="backgroundHeight"
-                        name="backgroundHeight"
-                        min="120"
-                        max="650"
-                        value={settings.backgroundHeight || 400}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value, 10);
-                          onSettingsChange({ backgroundHeight: value });
-                        }}
-                        style={{ width: '100%' }}
-                      />
-                    </div>
+                      style={{ width: '100%' }}
+                    />
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label 
+                    htmlFor="backgroundHeight" 
+                    style={{ display: 'block', marginBottom: '0.5rem' }}
+                  >
+                    Height (px): {settings.backgroundHeight || 400}
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="range"
+                      id="backgroundHeight"
+                      name="backgroundHeight"
+                      min="120"
+                      max="650"
+                      value={settings.backgroundHeight || 400}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        onSettingsChange({ backgroundHeight: value });
+                      }}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </FormGroup>
+        </SectionContent>
+      </FormSection>
       
       {/* 2. Position & Size */}
       <FormSection>
@@ -389,13 +353,9 @@ function BannerGenerator({ settings, onSettingsChange }) {
             {expandedSections.position ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>
         </SectionHeader>
-      </FormSection>
-      
-      {/* Position & Size Controls - Rendered outside the FormSection for better visibility */}
-      {expandedSections.position && (
-        <div style={{ padding: '15px', marginBottom: '20px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
-          <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="bannerScale" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Banner Scale</Label>
+        <SectionContent $isExpanded={expandedSections.position}>
+          <FormGroup>
+            <Label htmlFor="bannerScale">Banner Scale</Label>
             <SliderContainer>
               <Input
                 type="range"
@@ -405,14 +365,13 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 max="150"
                 value={settings.bannerScale || 100}
                 onChange={handleChange}
-                style={{ width: '100%' }}
               />
               <SliderValue>{settings.bannerScale || 100}%</SliderValue>
             </SliderContainer>
           </FormGroup>
         
-          <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="bannerOffsetX" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Horizontal Position</Label>
+          <FormGroup>
+            <Label htmlFor="bannerOffsetX">Horizontal Position</Label>
             <SliderContainer>
               <Input
                 type="range"
@@ -422,14 +381,13 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 max="50"
                 value={settings.bannerOffsetX || 0}
                 onChange={handleChange}
-                style={{ width: '100%' }}
               />
               <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
             </SliderContainer>
           </FormGroup>
           
-          <FormGroup style={{ marginBottom: '15px' }}>
-            <Label htmlFor="bannerOffsetY" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Vertical Position</Label>
+          <FormGroup>
+            <Label htmlFor="bannerOffsetY">Vertical Position</Label>
             <SliderContainer>
               <Input
                 type="range"
@@ -439,13 +397,12 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 max="50"
                 value={settings.bannerOffsetY || 0}
                 onChange={handleChange}
-                style={{ width: '100%' }}
               />
               <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
             </SliderContainer>
           </FormGroup>
-        </div>
-      )}
+        </SectionContent>
+      </FormSection>
       
       {/* 3. Text */}
       <FormSection>
@@ -456,147 +413,147 @@ function BannerGenerator({ settings, onSettingsChange }) {
           </ChevronIcon>
         </SectionHeader>
         <SectionContent $isExpanded={expandedSections.text}>
-        <FormGroup>
-          <Label htmlFor="text">Banner Text</Label>
-          <Input
-            type="text"
-            id="text"
-            name="text"
-            value={settings.text}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <input
-              type="checkbox"
-              id="subtitleVisible"
-              name="subtitleVisible"
-              checked={settings.subtitleVisible}
-              onChange={(e) => {
-                onSettingsChange({ subtitleVisible: e.target.checked });
-              }}
-              style={{ marginRight: '0.5rem' }}
-            />
-            <Label htmlFor="subtitleVisible">Show Subtitle</Label>
-          </div>
-          
-          {settings.subtitleVisible && (
-            <>
-              <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
-              <Input
-                type="text"
-                id="subtitle"
-                name="subtitle"
-                value={settings.subtitle}
-                onChange={handleChange}
-                placeholder="第1回"
-              />
-              
-              <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
-              <SliderContainer>
-                <Input
-                  type="range"
-                  id="subtitleFontSize"
-                  name="subtitleFontSize"
-                  min="8"
-                  max="36"
-                  value={settings.subtitleFontSize}
-                  onChange={handleChange}
-                />
-                <SliderValue>{settings.subtitleFontSize}px</SliderValue>
-              </SliderContainer>
-            </>
-          )}
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontFamily">Font Family</Label>
-          <Select
-            id="fontFamily"
-            name="fontFamily"
-            defaultValue="'Zen Maru Gothic', sans-serif"
-            onChange={handleChange}
-          >
-            {/* Western Fonts */}
-            <optgroup label="Western Fonts">
-              <option value="Arial">Arial</option>
-              <option value="Verdana">Verdana</option>
-              <option value="Helvetica">Helvetica</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Courier New">Courier New</option>
-            </optgroup>
-            
-            {/* Custom Japanese Fonts */}
-            <optgroup label="Custom Japanese Fonts">
-              <option value="'Oshigo', sans-serif">Oshigo</option>
-              <option value="'Nagino', sans-serif">Nagino</option>
-              <option value="'Aomemo', sans-serif">Aomemo</option>
-              <option value="'Gisshiri', sans-serif">Gisshiri</option>
-              <option value="'Migikataagari', sans-serif">Migikataagari</option>
-              <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
-              <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
-              <option value="'Karakaze', sans-serif">Karakaze</option>
-              <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
-              <option value="'IoEI', sans-serif">IoEI</option>
-              <option value="'BrushTappitsu', sans-serif">筆達筆</option>
-              <option value="'AprilGothic', sans-serif">April Gothic</option>
-              <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
-              <option value="'KSentai', sans-serif">K戦隊</option>
-              <option value="'Kirin', sans-serif">麒麟</option>
-              <option value="'Keee', sans-serif">KEEE!</option>
-              <option value="'KKotaro', sans-serif">K小太郎</option>
-              <option value="'KHongo', sans-serif">K本合</option>
-              <option value="'Potejiface', sans-serif">ポテジフェイス</option>
-              <option value="'AstroZ', sans-serif">AstroZ</option>
-            </optgroup>
-            
-            {/* Google Japanese Fonts */}
-            <optgroup label="Google Japanese Fonts">
-              <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
-              <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
-              <option value="'Noto Serif JP', serif">Noto Serif JP</option>
-              <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
-              <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
-              <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
-              <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
-              <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
-              <option value="'Shippori Mincho', serif">Shippori Mincho</option>
-              <option value="'Yuji Syuku', serif">Yuji Syuku</option>
-              <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
-              <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
-              <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
-            </optgroup>
-          </Select>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontSize">Font Size</Label>
-          <SliderContainer>
+          <FormGroup>
+            <Label htmlFor="text">Banner Text</Label>
             <Input
-              type="range"
-              id="fontSize"
-              name="fontSize"
-              min="12"
-              max="72"
-              value={settings.fontSize}
+              type="text"
+              id="text"
+              name="text"
+              value={settings.text}
               onChange={handleChange}
             />
-            <SliderValue>{settings.fontSize}px</SliderValue>
-          </SliderContainer>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontColor">Font Color</Label>
-          <ColorInput
-            type="color"
-            id="fontColor"
-            name="fontColor"
-            value={settings.fontColor}
-            onChange={handleChange}
-          />
-        </FormGroup>
+          </FormGroup>
+          
+          <FormGroup>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <input
+                type="checkbox"
+                id="subtitleVisible"
+                name="subtitleVisible"
+                checked={settings.subtitleVisible}
+                onChange={(e) => {
+                  onSettingsChange({ subtitleVisible: e.target.checked });
+                }}
+                style={{ marginRight: '0.5rem' }}
+              />
+              <Label htmlFor="subtitleVisible">Show Subtitle</Label>
+            </div>
+            
+            {settings.subtitleVisible && (
+              <>
+                <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
+                <Input
+                  type="text"
+                  id="subtitle"
+                  name="subtitle"
+                  value={settings.subtitle}
+                  onChange={handleChange}
+                  placeholder="第1回"
+                />
+                
+                <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="subtitleFontSize"
+                    name="subtitleFontSize"
+                    min="8"
+                    max="36"
+                    value={settings.subtitleFontSize}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.subtitleFontSize}px</SliderValue>
+                </SliderContainer>
+              </>
+            )}
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="fontFamily">Font Family</Label>
+            <Select
+              id="fontFamily"
+              name="fontFamily"
+              value={settings.fontFamily || "'KHongo', sans-serif"}
+              onChange={handleChange}
+            >
+              {/* Western Fonts */}
+              <optgroup label="Western Fonts">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+              </optgroup>
+              
+              {/* Custom Japanese Fonts */}
+              <optgroup label="Custom Japanese Fonts">
+                <option value="'Oshigo', sans-serif">Oshigo</option>
+                <option value="'Nagino', sans-serif">Nagino</option>
+                <option value="'Aomemo', sans-serif">Aomemo</option>
+                <option value="'Gisshiri', sans-serif">Gisshiri</option>
+                <option value="'Migikataagari', sans-serif">Migikataagari</option>
+                <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
+                <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
+                <option value="'Karakaze', sans-serif">Karakaze</option>
+                <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
+                <option value="'IoEI', sans-serif">IoEI</option>
+                <option value="'BrushTappitsu', sans-serif">筆達筆</option>
+                <option value="'AprilGothic', sans-serif">April Gothic</option>
+                <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
+                <option value="'KSentai', sans-serif">K戦隊</option>
+                <option value="'Kirin', sans-serif">麒麟</option>
+                <option value="'Keee', sans-serif">KEEE!</option>
+                <option value="'KKotaro', sans-serif">K小太郎</option>
+                <option value="'KHongo', sans-serif">K本郷</option>
+                <option value="'Potejiface', sans-serif">ポテジフェイス</option>
+                <option value="'AstroZ', sans-serif">AstroZ</option>
+              </optgroup>
+              
+              {/* Google Japanese Fonts */}
+              <optgroup label="Google Japanese Fonts">
+                <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
+                <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+                <option value="'Noto Serif JP', serif">Noto Serif JP</option>
+                <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
+                <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
+                <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
+                <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
+                <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
+                <option value="'Shippori Mincho', serif">Shippori Mincho</option>
+                <option value="'Yuji Syuku', serif">Yuji Syuku</option>
+                <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
+                <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
+                <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
+              </optgroup>
+            </Select>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="fontSize">Font Size</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="fontSize"
+                name="fontSize"
+                min="12"
+                max="72"
+                value={settings.fontSize}
+                onChange={handleChange}
+              />
+              <SliderValue>{settings.fontSize}px</SliderValue>
+            </SliderContainer>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="fontColor">Font Color</Label>
+            <ColorInput
+              type="color"
+              id="fontColor"
+              name="fontColor"
+              value={settings.fontColor}
+              onChange={handleChange}
+            />
+          </FormGroup>
         </SectionContent>
       </FormSection>
       
@@ -609,62 +566,62 @@ function BannerGenerator({ settings, onSettingsChange }) {
           </ChevronIcon>
         </SectionHeader>
         <SectionContent $isExpanded={expandedSections.shape}>
-        <FormGroup>
-          <Label htmlFor="shape">Background Shape</Label>
-          <Select
-            id="shape"
-            name="shape"
-            value={settings.shape}
-            onChange={handleChange}
-          >
-            <option value="none">None</option>
-            <option value="circle">Circle</option>
-            <option value="square">Square</option>
-            <option value="rectangle">Rectangle</option>
-          </Select>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label>Shape Image</Label>
-          <BackgroundPreviewContainer>
-            {imageOptions.map((image, index) => (
-              <BackgroundPreview 
-                key={index}
-                src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
-                selected={settings.shapeImage === image.path}
-                onClick={() => handleShapeImageSelect(image.path)}
-                title={image.name}
-              />
-            ))}
-          </BackgroundPreviewContainer>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="shapeColor">Shape Color (when no image)</Label>
-          <ColorInput
-            type="color"
-            id="shapeColor"
-            name="shapeColor"
-            value={settings.shapeColor}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="shapeSize">Shape Size</Label>
-          <SliderContainer>
-            <Input
-              type="range"
-              id="shapeSize"
-              name="shapeSize"
-              min="30"
-              max="100"
-              value={settings.shapeSize || 80}
+          <FormGroup>
+            <Label htmlFor="shape">Background Shape</Label>
+            <Select
+              id="shape"
+              name="shape"
+              value={settings.shape}
+              onChange={handleChange}
+            >
+              <option value="none">None</option>
+              <option value="circle">Circle</option>
+              <option value="square">Square</option>
+              <option value="rectangle">Rectangle</option>
+            </Select>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label>Shape Image</Label>
+            <BackgroundPreviewContainer>
+              {imageOptions.map((image, index) => (
+                <BackgroundPreview 
+                  key={index}
+                  src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
+                  selected={settings.shapeImage === image.path}
+                  onClick={() => handleShapeImageSelect(image.path)}
+                  title={image.name}
+                />
+              ))}
+            </BackgroundPreviewContainer>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="shapeColor">Shape Color (when no image)</Label>
+            <ColorInput
+              type="color"
+              id="shapeColor"
+              name="shapeColor"
+              value={settings.shapeColor}
               onChange={handleChange}
             />
-            <SliderValue>{settings.shapeSize || 80}%</SliderValue>
-          </SliderContainer>
-        </FormGroup>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="shapeSize">Shape Size</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="shapeSize"
+                name="shapeSize"
+                min="30"
+                max="100"
+                value={settings.shapeSize || 80}
+                onChange={handleChange}
+              />
+              <SliderValue>{settings.shapeSize || 80}%</SliderValue>
+            </SliderContainer>
+          </FormGroup>
         </SectionContent>
       </FormSection>
     </GeneratorContainer>

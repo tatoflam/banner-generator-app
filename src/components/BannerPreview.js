@@ -138,110 +138,47 @@ function BannerPreview({ settings, bannerRef }) {
     if (!previewRef.current) return;
     
     try {
-      console.log('Capturing banner preview for download');
+      console.log('Downloading banner...');
       
-      // Create a canvas element to draw the preview
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      // Show loading message
+      const loadingMessage = document.createElement('div');
+      loadingMessage.textContent = 'Preparing download...';
+      loadingMessage.style.position = 'fixed';
+      loadingMessage.style.top = '50%';
+      loadingMessage.style.left = '50%';
+      loadingMessage.style.transform = 'translate(-50%, -50%)';
+      loadingMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      loadingMessage.style.color = 'white';
+      loadingMessage.style.padding = '20px';
+      loadingMessage.style.borderRadius = '5px';
+      loadingMessage.style.zIndex = '9999';
+      document.body.appendChild(loadingMessage);
       
-      // Set canvas dimensions to match the preview area
-      const width = previewRef.current.clientWidth;
-      const height = previewRef.current.clientHeight;
-      canvas.width = width * window.devicePixelRatio;
-      canvas.height = height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
       
-      // Fill background
-      ctx.fillStyle = settings.backgroundColor || '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      
-      // Draw background image if available
-      if (settings.backgroundImage || settings.refinedImageUrl) {
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        
-        // Create a promise to wait for the image to load
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = settings.refinedImageUrl || settings.backgroundImage;
-        });
-        
-        // Calculate dimensions to maintain aspect ratio and cover the area
-        const imgAspect = img.width / img.height;
-        const canvasAspect = width / height;
-        let drawWidth, drawHeight, offsetX, offsetY;
-        
-        if (imgAspect > canvasAspect) {
-          // Image is wider than canvas
-          drawHeight = height;
-          drawWidth = height * imgAspect;
-          offsetX = (width - drawWidth) / 2;
-          offsetY = 0;
-        } else {
-          // Image is taller than canvas
-          drawWidth = width;
-          drawHeight = width / imgAspect;
-          offsetX = 0;
-          offsetY = (height - drawHeight) / 2;
-        }
-        
-        // Apply background size scaling if specified
-        if (settings.backgroundSize && settings.backgroundSize > 100) {
-          const scale = settings.backgroundSize / 100;
-          drawWidth *= scale;
-          drawHeight *= scale;
-          offsetX -= (drawWidth - width) / 2;
-          offsetY -= (drawHeight - height) / 2;
-        }
-        
-        // Draw the image
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      }
-      
-      // Draw text if enabled
-      if (settings.showTextOnBackground !== false) {
-        // Set font for main text
-        ctx.font = `${settings.fontSize}px ${settings.fontFamily || 'Arial, sans-serif'}`;
-        ctx.fillStyle = settings.fontColor || '#000000';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        // Add shadow if there's a background image
-        if (settings.refinedImageUrl) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-          ctx.shadowBlur = 2;
-          ctx.shadowOffsetX = 1;
-          ctx.shadowOffsetY = 1;
-        }
-        
-        // Draw main text
-        const textY = height / 2 - (settings.subtitleVisible ? settings.fontSize / 4 : 0);
-        ctx.fillText(settings.text, width / 2, textY);
-        
-        // Draw subtitle if enabled
-        if (settings.subtitleVisible && settings.subtitle) {
-          ctx.font = `${settings.subtitleFontSize}px ${settings.fontFamily || 'Arial, sans-serif'}`;
-          
-          // Calculate position for subtitle (right-aligned)
-          const subtitleWidth = ctx.measureText(settings.subtitle).width;
-          const subtitleX = width / 2 + subtitleWidth / 2;
-          // Reduce the vertical spacing to match the CSS changes
-          const subtitleY = textY + settings.fontSize / 2 + settings.subtitleFontSize / 2 + 2;
-          
-          ctx.fillText(settings.subtitle, subtitleX, subtitleY);
-        }
-      }
+      // Use html2canvas to capture the preview area directly
+      const canvas = await html2canvas(previewRef.current, {
+        scale: window.devicePixelRatio, // Use device pixel ratio for higher quality
+        useCORS: true, // Allow cross-origin images
+        allowTaint: true, // Allow tainted canvas
+        backgroundColor: settings.backgroundColor || '#ffffff',
+        logging: false, // Disable logging
+      });
       
       // Convert canvas to data URL
       const dataUrl = canvas.toDataURL('image/png');
-      console.log('Banner preview captured successfully');
       
       // Create a link element and trigger download
       const link = document.createElement('a');
       link.download = `banner-${new Date().getTime()}.png`;
       link.href = dataUrl;
       link.click();
+      
+      // Remove loading message
+      document.body.removeChild(loadingMessage);
+      
+      console.log('Download complete!');
     } catch (error) {
       console.error('Error downloading image:', error);
       alert('Failed to download image. Please try again.');
