@@ -44,9 +44,10 @@ npm run deploy
 ```
 
 ### Environment Variables and Secrets
+
 The application uses the following environment variables and secrets:
 
-- `REACT_APP_STABILITY_API_KEY`: Your Stability AI API key for AI banner refinement
+- `REACT_APP_STABILITY_API_KEY`: Your Stability AI API key for AI banner refinement <- This is invalid in usual operation. Please fill this in Stability `AI API Key` field in application by yourself.  
 - `GH_PAGES_TOKEN`: A GitHub Personal Access Token with repo permissions for GitHub Pages deployment
 
 To set up environment variables and secrets:
@@ -66,8 +67,10 @@ To set up environment variables and secrets:
    3. Give it a name, set an expiration, and select the "repo" scope
    4. Copy the generated token and add it as a secret in your repository settings
 
-## Pages
+## Github Pages
 
+1. Github Repository > Settings > Pages > Build and Deployment  > Set Branch to `gh-pages`  
+2. After few minutes, access to 
 https://tatoflam.github.io/banner-generator-app
 
 
