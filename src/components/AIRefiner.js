@@ -44,6 +44,7 @@ const ApiKeyInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 1rem;
+  background-color: ${props => props.$error ? '#fab4b4' : 'white'};
 `;
 
 const PromptTextarea = styled.textarea`
@@ -131,6 +132,7 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
   // Read API key from environment variable if available
   const defaultApiKey = process.env.REACT_APP_STABILITY_API_KEY || '';
   const [apiKey, setApiKey] = useState(defaultApiKey);
+  const [apiKeyError, setApiKeyError] = useState(false);
   const [userPrompt, setUserPrompt] = useState('Make the river attractive with extraordinary big fish, frogs, Dinosaur, Japanese children from 6 to 9 years old putting on purple T-shirt. Transform this image into an abstract art style. Use bold colors, geometric shapes, and artistic patterns while maintaining the overall theme. Make it visually striking and modern. Keep the text readable but integrate it artistically into the design.');
   const [negativePrompt, setNegativePrompt] = useState('Do not draw totally different character, maintain the original text and theme, avoid blurry or distorted text, no watermarks, no signatures. If there is no text in the image, do not include any text in generated image.');
   const [stylePreset, setStylePreset] = useState('anime');
@@ -168,11 +170,49 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       console.error('No API key provided');
       setMessage('Please enter your Stability AI API key');
       setMessageType('error');
+      setApiKeyError(true);
+      alert('Please enter your Stability AI API key');
       return;
     }
+    
+    // Reset API key error state
+    setApiKeyError(false);
 
     try {
       setIsRefining(true);
+      setMessage('Validating API key...');
+      setMessageType('info');
+      
+      // Validate the API key before proceeding
+      try {
+        // Make a simple request to validate the API key
+        const headers = new Headers();
+        headers.append('Authorization', `Bearer ${apiKey}`);
+        headers.append('Accept', 'application/json');
+        
+        const validateResponse = await fetch('https://api.stability.ai/v1/user/account', {
+          method: 'GET',
+          headers: headers
+        });
+        
+        if (!validateResponse.ok) {
+          const errorText = await validateResponse.text();
+          console.error('API key validation failed:', errorText);
+          throw new Error(`API key validation failed: ${validateResponse.status} - ${errorText}`);
+        }
+        
+        // API key is valid, continue with the refinement process
+        console.log('API key validated successfully');
+      } catch (validationError) {
+        console.error('API key validation error:', validationError);
+        setMessage('Invalid Stability AI API key');
+        setMessageType('error');
+        setApiKeyError(true);
+        alert('Invalid Stability AI API key. Please check your API key and try again.');
+        setIsRefining(false);
+        return;
+      }
+      
       setMessage('Refining your banner with AI...');
       setMessageType('info');
 
@@ -203,7 +243,7 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       console.log('Banner element computed style width:', window.getComputedStyle(bannerElement).width);
       console.log('Banner element computed style height:', window.getComputedStyle(bannerElement).height);
       
-      // Check if we should include text in the refinement
+      // Now that the API key is validated, ask if we should include text in the refinement
       const includeText = window.confirm('Include text in the refinement? Click OK to include text, or Cancel to refine only the background.');
       
       // Store references to text elements that might be hidden
@@ -461,6 +501,11 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
               .then(response => {
                 if (!response.ok) {
                   return response.text().then(text => {
+                    // Check for API key validation errors
+                    if (response.status === 401 || text.includes('unauthorized') || text.includes('invalid key')) {
+                      setApiKeyError(true);
+                      alert('Invalid Stability AI API key. Please check your API key and try again.');
+                    }
                     throw new Error(`API Error: ${response.status} - ${text}`);
                   });
                 }
@@ -605,6 +650,10 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         errorMessage = 'The request timed out. Please check your internet connection and try again.';
       } else if (errorMessage.includes('network')) {
         errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (errorMessage.includes('401') || errorMessage.includes('unauthorized') || errorMessage.includes('invalid key')) {
+        errorMessage = 'Invalid API key. Please check your Stability AI API key and try again.';
+        setApiKeyError(true);
+        alert('Invalid Stability AI API key. Please check your API key and try again.');
       }
       
       setMessage(`Error: ${errorMessage}`);
@@ -619,13 +668,27 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       <h2>AI Banner Refinement</h2>
       <p>Use Stability AI to enhance and refine your banner design.</p>
       
-      <Label htmlFor="apiKey">Stability AI API Key</Label>
+      <Label htmlFor="apiKey">
+        Stability AI API Key{' '}
+        <a 
+          href="https://platform.stability.ai/" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          style={{ fontSize: '0.8rem', fontWeight: 'normal', color: '#2196F3' }}
+        >
+          Stability AI API?
+        </a>
+      </Label>
       <ApiKeyInput
         id="apiKey"
         type="password"
         placeholder="Enter your Stability AI API key"
         value={apiKey}
-        onChange={(e) => setApiKey(e.target.value)}
+        onChange={(e) => {
+          setApiKey(e.target.value);
+          if (apiKeyError) setApiKeyError(false);
+        }}
+        $error={apiKeyError}
       />
       
       <Label htmlFor="userPrompt">Refinement Instructions</Label>
