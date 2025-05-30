@@ -202,6 +202,20 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       console.log('Banner element style:', bannerElement.getAttribute('style'));
       console.log('Banner element computed style width:', window.getComputedStyle(bannerElement).width);
       console.log('Banner element computed style height:', window.getComputedStyle(bannerElement).height);
+      
+      // Check if we should include text in the refinement
+      const includeText = window.confirm('Include text in the refinement? Click OK to include text, or Cancel to refine only the background.');
+      
+      // Store references to text elements that might be hidden
+      const textElements = bannerElement.querySelectorAll('.banner-text');
+      
+      // If we're not including text, temporarily hide it
+      if (!includeText) {
+        textElements.forEach(el => {
+          el.dataset.originalDisplay = el.style.display || '';
+          el.style.display = 'none';
+        });
+      }
 
       // Import html-to-image dynamically
       console.log('Importing html-to-image');
@@ -297,6 +311,13 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       } finally {
         // Restore console.error
         console.error = originalConsoleError;
+        
+        // Restore any hidden text elements
+        if (!includeText) {
+          textElements.forEach(el => {
+            el.style.display = el.dataset.originalDisplay;
+          });
+        }
       }
       
       // Debug: Log the banner element and its contents

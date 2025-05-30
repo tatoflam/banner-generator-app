@@ -138,102 +138,104 @@ function BannerPreview({ settings, bannerRef }) {
     if (!previewRef.current) return;
     
     try {
-      // Use html-to-image to directly capture the preview area exactly as it appears
-      // This ensures all CSS styling, cropping, and positioning is preserved
       console.log('Capturing banner preview for download');
       
-      // Configure the capture options to ensure we get the exact visual representation
-      // Set skipFonts to true to avoid font loading errors
-      const captureOptions = {
-        quality: 1.0,
-        pixelRatio: window.devicePixelRatio,
-        skipFonts: true, // Skip loading fonts to prevent resource errors
-        // Ensure background images and colors are captured
-        backgroundColor: settings.backgroundColor || '#ffffff',
-        style: {
-          backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
-          backgroundPosition: 'center',
-          margin: '0',
-          padding: '0',
-          border: 'none'
-        },
-        // Remove any whitespace around the image
-        width: previewRef.current.clientWidth,
-        height: previewRef.current.clientHeight,
-        // Suppress console errors during capture
-        onclone: (clonedDoc) => {
-          // Get the preview element in the cloned document
-          const previewElement = clonedDoc.querySelector('.preview-area');
-          
-          if (previewElement) {
-            // Remove any margins or padding that might cause shifting
-            previewElement.style.margin = '0';
-            previewElement.style.padding = '0';
-            
-            // Ensure content is centered
-            previewElement.style.display = 'flex';
-            previewElement.style.justifyContent = 'center';
-            previewElement.style.alignItems = 'center';
-            
-            // Ensure text is properly centered
-            const textElement = previewElement.querySelector('div');
-            if (textElement) {
-              textElement.style.margin = '0';
-              textElement.style.padding = '0';
-              textElement.style.textAlign = 'center';
-            }
-            
-            // Ensure refined image is properly positioned
-            const imgElement = previewElement.querySelector('img');
-            if (imgElement) {
-              imgElement.style.margin = '0';
-              imgElement.style.padding = '0';
-              imgElement.style.objectFit = 'contain';
-              imgElement.style.width = '100%';
-              imgElement.style.height = '100%';
-            }
-          }
-          
-          // Add a style to ensure text renders correctly even with skipFonts: true
-          const style = clonedDoc.createElement('style');
-          style.innerHTML = `
-            * {
-              font-family: ${settings.fontFamily || 'Arial, sans-serif'} !important;
-              box-sizing: border-box;
-            }
-            .preview-area {
-              margin: 0 !important;
-              padding: 0 !important;
-              display: flex !important;
-              justify-content: center !important;
-              align-items: center !important;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
+      // Create a canvas element to draw the preview
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas dimensions to match the preview area
+      const width = previewRef.current.clientWidth;
+      const height = previewRef.current.clientHeight;
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      
+      // Fill background
+      ctx.fillStyle = settings.backgroundColor || '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw background image if available
+      if (settings.backgroundImage || settings.refinedImageUrl) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        
+        // Create a promise to wait for the image to load
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = settings.refinedImageUrl || settings.backgroundImage;
+        });
+        
+        // Calculate dimensions to maintain aspect ratio and cover the area
+        const imgAspect = img.width / img.height;
+        const canvasAspect = width / height;
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (imgAspect > canvasAspect) {
+          // Image is wider than canvas
+          drawHeight = height;
+          drawWidth = height * imgAspect;
+          offsetX = (width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Image is taller than canvas
+          drawWidth = width;
+          drawHeight = width / imgAspect;
+          offsetX = 0;
+          offsetY = (height - drawHeight) / 2;
         }
-      };
-      
-      // Import html-to-image dynamically
-      const { toPng } = await import('html-to-image');
-      
-      // Temporarily suppress console errors
-      const originalConsoleError = console.error;
-      console.error = (msg) => {
-        // Only log errors that aren't related to font loading
-        if (!msg || (typeof msg === 'string' && !msg.includes('fonts.gstatic.com'))) {
-          originalConsoleError(msg);
+        
+        // Apply background size scaling if specified
+        if (settings.backgroundSize && settings.backgroundSize > 100) {
+          const scale = settings.backgroundSize / 100;
+          drawWidth *= scale;
+          drawHeight *= scale;
+          offsetX -= (drawWidth - width) / 2;
+          offsetY -= (drawHeight - height) / 2;
         }
-      };
-      
-      let dataUrl;
-      try {
-        // Capture the preview area exactly as it appears
-        dataUrl = await toPng(previewRef.current, captureOptions);
-        console.log('Banner preview captured successfully');
-      } finally {
-        // Restore console.error
-        console.error = originalConsoleError;
+        
+        // Draw the image
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       }
+      
+      // Draw text if enabled
+      if (settings.showTextOnBackground !== false) {
+        // Set font for main text
+        ctx.font = `${settings.fontSize}px ${settings.fontFamily || 'Arial, sans-serif'}`;
+        ctx.fillStyle = settings.fontColor || '#000000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Add shadow if there's a background image
+        if (settings.refinedImageUrl) {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 2;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+        }
+        
+        // Draw main text
+        const textY = height / 2 - (settings.subtitleVisible ? settings.fontSize / 4 : 0);
+        ctx.fillText(settings.text, width / 2, textY);
+        
+        // Draw subtitle if enabled
+        if (settings.subtitleVisible && settings.subtitle) {
+          ctx.font = `${settings.subtitleFontSize}px ${settings.fontFamily || 'Arial, sans-serif'}`;
+          
+          // Calculate position for subtitle (right-aligned)
+          const subtitleWidth = ctx.measureText(settings.subtitle).width;
+          const subtitleX = width / 2 + subtitleWidth / 2;
+          // Reduce the vertical spacing to match the CSS changes
+          const subtitleY = textY + settings.fontSize / 2 + settings.subtitleFontSize / 2 + 2;
+          
+          ctx.fillText(settings.subtitle, subtitleX, subtitleY);
+        }
+      }
+      
+      // Convert canvas to data URL
+      const dataUrl = canvas.toDataURL('image/png');
+      console.log('Banner preview captured successfully');
       
       // Create a link element and trigger download
       const link = document.createElement('a');
@@ -259,55 +261,63 @@ function BannerPreview({ settings, bannerRef }) {
         $backgroundWidth={settings.backgroundWidth}
         $backgroundHeight={settings.backgroundHeight}
       >
-        {settings.refinedImageUrl ? (
+        {/* Always show the refined image if available */}
+        {settings.refinedImageUrl && (
           <RefinedImage src={settings.refinedImageUrl} alt="Refined Banner" />
-        ) : (
-          <>
-            {settings.showTextOnBackground !== false && (
-              <BannerText
-                ref={bannerRef}
-                $fontFamily={settings.fontFamily}
-                $fontSize={settings.fontSize}
-                $fontColor={settings.fontColor}
-                $shape={settings.shape}
-                $shapeColor={settings.shapeColor}
-                $shapeImage={settings.shapeImage}
-                $shapeSize={settings.shapeSize}
-                $bannerScale={settings.bannerScale}
-                $bannerOffsetX={settings.bannerOffsetX}
-                $bannerOffsetY={settings.bannerOffsetY}
-              >
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
+        )}
+        
+        {/* Always show text if enabled, regardless of whether there's a refined image */}
+        {settings.showTextOnBackground !== false && (
+          <BannerText
+            ref={bannerRef}
+            className="banner-text" // Add class name for AIRefiner to identify
+            $fontFamily={settings.fontFamily}
+            $fontSize={settings.fontSize}
+            $fontColor={settings.fontColor}
+            $shape={settings.shape && !settings.refinedImageUrl ? settings.shape : 'none'} // Only use shape if no refined image
+            $shapeColor={settings.shapeColor}
+            $shapeImage={settings.shapeImage}
+            $shapeSize={settings.shapeSize}
+            $bannerScale={settings.bannerScale}
+            $bannerOffsetX={settings.bannerOffsetX}
+            $bannerOffsetY={settings.bannerOffsetY}
+            style={{ 
+              zIndex: 20, // Ensure text is above the refined image
+              position: settings.refinedImageUrl ? 'absolute' : 'relative'
+            }}
+          >
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              padding: 0,
+              margin: 0
+            }}>
+              <div style={{ 
+                padding: 0, 
+                margin: '0.75rem 0 0 0', // Add top margin to the title
+                lineHeight: 1.1, // Reduce line height to tighten spacing
+                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none' // Add shadow for better visibility on images
+              }}>
+                {settings.text}
+              </div>
+              
+              {settings.subtitleVisible && settings.subtitle && (
+                <div style={{
+                  fontSize: `${settings.subtitleFontSize}px`,
+                  marginTop: `0.1rem`, // Further reduce space between title and subtitle
+                  marginBottom: '0.75rem', // Add margin between subtitle and bottom
                   padding: 0,
-                  margin: 0
+                  lineHeight: 1.1, // Reduce line height to tighten spacing
+                  alignSelf: 'flex-end',
+                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none' // Add shadow for better visibility on images
                 }}>
-                  <div style={{ 
-                    padding: 0, 
-                    margin: 0,
-                    lineHeight: 1.1
-                  }}>
-                    {settings.text}
-                  </div>
-                  
-                  {settings.subtitleVisible && settings.subtitle && (
-                    <div style={{
-                      fontSize: `${settings.subtitleFontSize}px`,
-                      marginTop: `0.1rem`,
-                      padding: 0,
-                      lineHeight: 1.1,
-                      alignSelf: 'flex-end'
-                    }}>
-                      {settings.subtitle}
-                    </div>
-                  )}
+                  {settings.subtitle}
                 </div>
-              </BannerText>
-            )}
-          </>
+              )}
+            </div>
+          </BannerText>
         )}
       </PreviewArea>
       
