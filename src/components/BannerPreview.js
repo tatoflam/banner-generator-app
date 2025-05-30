@@ -226,8 +226,51 @@ function BannerPreview({ settings, bannerRef }) {
           <RefinedImage src={settings.refinedImageUrl} alt="Refined Banner" />
         )}
         
-        {/* Always show text if enabled, regardless of whether there's a refined image */}
-        {settings.showTextOnBackground !== false && (
+        {/* Show banner image if useBannerImage is true */}
+        {settings.showTextOnBackground !== false && settings.useBannerImage && (
+          <div
+            style={{
+              position: settings.refinedImageUrl ? 'absolute' : 'relative',
+              zIndex: 20,
+              transform: `scale(${settings.bannerImageScale / 100}) translate(${settings.bannerImageOffsetX}%, ${settings.bannerImageOffsetY}%)`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <img 
+              src={settings.bannerImage}
+              alt="Banner Title"
+              style={{
+                maxWidth: '80%',
+                maxHeight: '80%',
+                objectFit: 'contain'
+              }}
+            />
+            
+            {/* Show subtitle with banner image if enabled */}
+            {settings.subtitleVisible && settings.subtitle && (
+              <div style={{
+                fontSize: `${settings.subtitleFontSize}px`,
+                fontFamily: settings.fontFamily || "'KHongo', sans-serif",
+                color: settings.fontColor || '#000000',
+                marginTop: '0.5rem',
+                textAlign: 'right',
+                alignSelf: 'flex-end',
+                marginRight: '10%',
+                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
+              }}>
+                {settings.subtitle}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Always show text if enabled and useBannerImage is false */}
+        {settings.showTextOnBackground !== false && !settings.useBannerImage && (
           <BannerText
             ref={bannerRef}
             className="banner-text" // Add class name for AIRefiner to identify

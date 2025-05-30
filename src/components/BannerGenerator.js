@@ -159,6 +159,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
   const [imageOptions, setImageOptions] = useState([]);
   const [expandedSections, setExpandedSections] = useState({
     text: true,
+    bannerImage: false,
     shape: false,
     background: false,
     position: false
@@ -175,11 +176,11 @@ function BannerGenerator({ settings, onSettingsChange }) {
     // Load images from public/assets with PUBLIC_URL prefix for GitHub Pages compatibility
     const images = [
       { name: 'None', path: null },
-      { name: 'Spring', path: `${process.env.PUBLIC_URL}/assets/spring.png` },
-      { name: 'Summer', path: `${process.env.PUBLIC_URL}/assets/summer.png` },
-      { name: 'Autumn', path: `${process.env.PUBLIC_URL}/assets/autumn.png` },
-      { name: 'Winter', path: `${process.env.PUBLIC_URL}/assets/winter.png` },
-      { name: 'Nogawa', path: `${process.env.PUBLIC_URL}/assets/nogawa.png` }
+      { name: 'Spring', path: `${process.env.PUBLIC_URL}/assets/image/bg/spring.png` },
+      { name: 'Summer', path: `${process.env.PUBLIC_URL}/assets/image/bg/summer.png` },
+      { name: 'Autumn', path: `${process.env.PUBLIC_URL}/assets/image/bg/autumn.png` },
+      { name: 'Winter', path: `${process.env.PUBLIC_URL}/assets/image/bg/winter.png` },
+      { name: 'Nogawa', path: `${process.env.PUBLIC_URL}/assets/image/bg/nogawa.png` }
     ];
     
     setImageOptions(images);
@@ -422,16 +423,39 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </SectionHeader>
         <SectionContent $isExpanded={expandedSections.text}>
           <FormGroup>
-            <Label htmlFor="text">Banner Text</Label>
-            <Input
-              type="text"
-              id="text"
-              name="text"
-              value={settings.text}
-              onChange={handleChange}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <input
+                type="checkbox"
+                id="useBannerImage"
+                name="useBannerImage"
+                checked={settings.useBannerImage}
+                onChange={(e) => {
+                  onSettingsChange({ useBannerImage: e.target.checked });
+                }}
+                style={{ marginRight: '0.5rem' }}
+              />
+              <Label htmlFor="useBannerImage">Use Banner Image Instead of Text</Label>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem', marginBottom: '1rem' }}>
+              Check to use a banner image instead of text
+            </div>
           </FormGroup>
           
+          {/* Banner Text - only shown when not using banner image */}
+          {!settings.useBannerImage && (
+            <FormGroup>
+              <Label htmlFor="text">Banner Text</Label>
+              <Input
+                type="text"
+                id="text"
+                name="text"
+                value={settings.text}
+                onChange={handleChange}
+              />
+            </FormGroup>
+          )}
+          
+          {/* Subtitle - always shown, regardless of banner image setting */}
           <FormGroup>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
               <input
@@ -476,92 +500,186 @@ function BannerGenerator({ settings, onSettingsChange }) {
             )}
           </FormGroup>
           
-          <FormGroup>
-            <Label htmlFor="fontFamily">Font Family</Label>
-            <Select
-              id="fontFamily"
-              name="fontFamily"
-              value={settings.fontFamily || "'KHongo', sans-serif"}
-              onChange={handleChange}
-            >
-              {/* Western Fonts */}
-              <optgroup label="Western Fonts">
-                <option value="Arial">Arial</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Helvetica">Helvetica</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-              </optgroup>
+          {/* Font settings - only shown when not using banner image */}
+          {!settings.useBannerImage && (
+            <>
+              <FormGroup>
+                <Label htmlFor="fontFamily">Font Family</Label>
+                <Select
+                  id="fontFamily"
+                  name="fontFamily"
+                  value={settings.fontFamily || "'KHongo', sans-serif"}
+                  onChange={handleChange}
+                >
+                  {/* Western Fonts */}
+                  <optgroup label="Western Fonts">
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                  </optgroup>
+                  
+                  {/* Custom Japanese Fonts */}
+                  <optgroup label="Custom Japanese Fonts">
+                    <option value="'Oshigo', sans-serif">Oshigo</option>
+                    <option value="'Nagino', sans-serif">Nagino</option>
+                    <option value="'Aomemo', sans-serif">Aomemo</option>
+                    <option value="'Gisshiri', sans-serif">Gisshiri</option>
+                    <option value="'Migikataagari', sans-serif">Migikataagari</option>
+                    <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
+                    <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
+                    <option value="'Karakaze', sans-serif">Karakaze</option>
+                    <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
+                    <option value="'IoEI', sans-serif">IoEI</option>
+                    <option value="'BrushTappitsu', sans-serif">筆達筆</option>
+                    <option value="'AprilGothic', sans-serif">April Gothic</option>
+                    <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
+                    <option value="'KSentai', sans-serif">K戦隊</option>
+                    <option value="'Kirin', sans-serif">麒麟</option>
+                    <option value="'Keee', sans-serif">KEEE!</option>
+                    <option value="'KKotaro', sans-serif">K小太郎</option>
+                    <option value="'KHongo', sans-serif">K本郷</option>
+                    <option value="'Potejiface', sans-serif">ポテジフェイス</option>
+                    <option value="'AstroZ', sans-serif">AstroZ</option>
+                  </optgroup>
+                  
+                  {/* Google Japanese Fonts */}
+                  <optgroup label="Google Japanese Fonts">
+                    <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
+                    <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+                    <option value="'Noto Serif JP', serif">Noto Serif JP</option>
+                    <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
+                    <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
+                    <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
+                    <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
+                    <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
+                    <option value="'Shippori Mincho', serif">Shippori Mincho</option>
+                    <option value="'Yuji Syuku', serif">Yuji Syuku</option>
+                    <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
+                    <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
+                    <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
+                  </optgroup>
+                </Select>
+              </FormGroup>
               
-              {/* Custom Japanese Fonts */}
-              <optgroup label="Custom Japanese Fonts">
-                <option value="'Oshigo', sans-serif">Oshigo</option>
-                <option value="'Nagino', sans-serif">Nagino</option>
-                <option value="'Aomemo', sans-serif">Aomemo</option>
-                <option value="'Gisshiri', sans-serif">Gisshiri</option>
-                <option value="'Migikataagari', sans-serif">Migikataagari</option>
-                <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
-                <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
-                <option value="'Karakaze', sans-serif">Karakaze</option>
-                <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
-                <option value="'IoEI', sans-serif">IoEI</option>
-                <option value="'BrushTappitsu', sans-serif">筆達筆</option>
-                <option value="'AprilGothic', sans-serif">April Gothic</option>
-                <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
-                <option value="'KSentai', sans-serif">K戦隊</option>
-                <option value="'Kirin', sans-serif">麒麟</option>
-                <option value="'Keee', sans-serif">KEEE!</option>
-                <option value="'KKotaro', sans-serif">K小太郎</option>
-                <option value="'KHongo', sans-serif">K本郷</option>
-                <option value="'Potejiface', sans-serif">ポテジフェイス</option>
-                <option value="'AstroZ', sans-serif">AstroZ</option>
-              </optgroup>
+              <FormGroup>
+                <Label htmlFor="fontSize">Font Size</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="fontSize"
+                    name="fontSize"
+                    min="12"
+                    max="72"
+                    value={settings.fontSize}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.fontSize}px</SliderValue>
+                </SliderContainer>
+              </FormGroup>
               
-              {/* Google Japanese Fonts */}
-              <optgroup label="Google Japanese Fonts">
-                <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
-                <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
-                <option value="'Noto Serif JP', serif">Noto Serif JP</option>
-                <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
-                <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
-                <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
-                <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
-                <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
-                <option value="'Shippori Mincho', serif">Shippori Mincho</option>
-                <option value="'Yuji Syuku', serif">Yuji Syuku</option>
-                <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
-                <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
-                <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
-              </optgroup>
-            </Select>
-          </FormGroup>
-          
+              <FormGroup>
+                <Label htmlFor="fontColor">Font Color</Label>
+                <ColorInput
+                  type="color"
+                  id="fontColor"
+                  name="fontColor"
+                  value={settings.fontColor}
+                  onChange={handleChange}
+                />
+              </FormGroup>
+            </>
+          )}
+        </SectionContent>
+      </FormSection>
+      
+      {/* 4. Banner Image */}
+      <FormSection>
+        <SectionHeader onClick={() => toggleSection('bannerImage')}>
+          <SectionTitle>Banner Image</SectionTitle>
+          <ChevronIcon>
+            {expandedSections.bannerImage ? <FaChevronUp /> : <FaChevronDown />}
+          </ChevronIcon>
+        </SectionHeader>
+        <SectionContent $isExpanded={expandedSections.bannerImage}>
           <FormGroup>
-            <Label htmlFor="fontSize">Font Size</Label>
-            <SliderContainer>
-              <Input
-                type="range"
-                id="fontSize"
-                name="fontSize"
-                min="12"
-                max="72"
-                value={settings.fontSize}
-                onChange={handleChange}
+            <Label>Banner Image</Label>
+            <div style={{ marginBottom: '1rem' }}>
+              <img 
+                src={`${process.env.PUBLIC_URL}/assets/image/title/すっぱくろ題字_01.png`} 
+                alt="Banner Title" 
+                style={{ 
+                  width: '100%', 
+                  maxWidth: '300px', 
+                  display: 'block', 
+                  margin: '0 auto',
+                  border: settings.useBannerImage ? '2px solid #4CAF50' : '1px solid #ddd',
+                  borderRadius: '4px',
+                  padding: '5px',
+                  backgroundColor: settings.useBannerImage ? '#e8f5e9' : 'transparent'
+                }} 
               />
-              <SliderValue>{settings.fontSize}px</SliderValue>
-            </SliderContainer>
+            </div>
+            
+            <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem', textAlign: 'center' }}>
+              {settings.useBannerImage ? 
+                'Banner image is currently enabled. Adjust settings below.' : 
+                'Enable "Use Banner Image" in the Text section to use this image.'}
+            </div>
           </FormGroup>
           
-          <FormGroup>
-            <Label htmlFor="fontColor">Font Color</Label>
-            <ColorInput
-              type="color"
-              id="fontColor"
-              name="fontColor"
-              value={settings.fontColor}
-              onChange={handleChange}
-            />
-          </FormGroup>
+          {settings.useBannerImage && (
+            <>
+              <FormGroup>
+                <Label htmlFor="bannerImageScale">Banner Image Scale</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="bannerImageScale"
+                    name="bannerImageScale"
+                    min="50"
+                    max="150"
+                    value={settings.bannerImageScale || 100}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.bannerImageScale || 100}%</SliderValue>
+                </SliderContainer>
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="bannerImageOffsetX">Horizontal Position</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="bannerImageOffsetX"
+                    name="bannerImageOffsetX"
+                    min="-50"
+                    max="50"
+                    value={settings.bannerImageOffsetX || 0}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.bannerImageOffsetX || 0}</SliderValue>
+                </SliderContainer>
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="bannerImageOffsetY">Vertical Position</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="bannerImageOffsetY"
+                    name="bannerImageOffsetY"
+                    min="-50"
+                    max="50"
+                    value={settings.bannerImageOffsetY || 0}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.bannerImageOffsetY || 0}</SliderValue>
+                </SliderContainer>
+              </FormGroup>
+            </>
+          )}
         </SectionContent>
       </FormSection>
       

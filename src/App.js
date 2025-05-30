@@ -60,7 +60,7 @@ function App() {
     shapeColor: '#cccccc',
     shapeImage: null,
     shapeSize: 80,
-    backgroundImage: `${process.env.PUBLIC_URL}/assets/nogawa.png`,
+    backgroundImage: `${process.env.PUBLIC_URL}/assets/image/bg/nogawa.png`,
     backgroundSize: 100,
     customBackgroundDimensions: true,
     backgroundWidth: 360,
@@ -69,7 +69,12 @@ function App() {
     bannerOffsetX: 0,
     bannerOffsetY: 0,
     refinedImageUrl: null,
-    showTextOnBackground: true
+    showTextOnBackground: true,
+    useBannerImage: false,
+    bannerImage: `${process.env.PUBLIC_URL}/assets/image/title/すっぱくろ題字_01.png`,
+    bannerImageScale: 100,
+    bannerImageOffsetX: 0,
+    bannerImageOffsetY: 0
   });
   
   const bannerRef = useRef(null);
