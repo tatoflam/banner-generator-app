@@ -48,8 +48,6 @@ const BannerText = styled.div`
   font-size: ${props => props.$fontSize}px;
   color: ${props => props.$fontColor};
   text-align: center;
-  transform: scale(${props => (props.$bannerScale || 100) / 100}) 
-             translate(${props => props.$bannerOffsetX || 0}%, ${props => props.$bannerOffsetY || 0}%);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -257,10 +255,10 @@ function BannerPreview({ settings, bannerRef }) {
                 fontSize: `${settings.subtitleFontSize}px`,
                 fontFamily: settings.fontFamily || "'KHongo', sans-serif",
                 color: settings.fontColor || '#000000',
-                marginTop: '0.5rem',
-                textAlign: 'right',
-                alignSelf: 'flex-end',
-                marginRight: '10%',
+                position: 'absolute',
+                bottom: '10%',
+                right: '10%',
+                transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
                 textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
               }}>
                 {settings.subtitle}
@@ -301,7 +299,9 @@ function BannerPreview({ settings, bannerRef }) {
                 padding: 0, 
                 margin: '0.75rem 0 0 0', // Add top margin to the title
                 lineHeight: 1.1, // Reduce line height to tighten spacing
-                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none' // Add shadow for better visibility on images
+                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none', // Add shadow for better visibility on images
+                transform: `scale(${(settings.bannerScale || 100) / 100}) 
+                           translate(${settings.bannerOffsetX || 0}%, ${settings.bannerOffsetY || -20}%)`
               }}>
                 {settings.text}
               </div>
@@ -309,11 +309,12 @@ function BannerPreview({ settings, bannerRef }) {
               {settings.subtitleVisible && settings.subtitle && (
                 <div style={{
                   fontSize: `${settings.subtitleFontSize}px`,
-                  marginTop: `0.1rem`, // Further reduce space between title and subtitle
-                  marginBottom: '0.75rem', // Add margin between subtitle and bottom
                   padding: 0,
                   lineHeight: 1.1, // Reduce line height to tighten spacing
-                  alignSelf: 'flex-end',
+                  position: 'absolute',
+                  bottom: '10%',
+                  right: '10%',
+                  transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
                   textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none' // Add shadow for better visibility on images
                 }}>
                   {settings.subtitle}

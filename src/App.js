@@ -55,6 +55,8 @@ function App() {
     subtitle: 'VOL.2',
     subtitleFontSize: 16,
     subtitleVisible: true,
+    subtitleOffsetX: 0,
+    subtitleOffsetY: 0,
     backgroundColor: '#fab4b4',
     shape: 'none',
     shapeColor: '#cccccc',

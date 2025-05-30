@@ -354,69 +354,11 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </SectionContent>
       </FormSection>
       
-      {/* 2. Position & Size */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('position')}>
-          <SectionTitle>Position & Size</SectionTitle>
-          <ChevronIcon>
-            {expandedSections.position ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.position}>
-          <FormGroup>
-            <Label htmlFor="bannerScale">Banner Scale</Label>
-            <SliderContainer>
-              <Input
-                type="range"
-                id="bannerScale"
-                name="bannerScale"
-                min="50"
-                max="150"
-                value={settings.bannerScale || 100}
-                onChange={handleChange}
-              />
-              <SliderValue>{settings.bannerScale || 100}%</SliderValue>
-            </SliderContainer>
-          </FormGroup>
-        
-          <FormGroup>
-            <Label htmlFor="bannerOffsetX">Horizontal Position</Label>
-            <SliderContainer>
-              <Input
-                type="range"
-                id="bannerOffsetX"
-                name="bannerOffsetX"
-                min="-50"
-                max="50"
-                value={settings.bannerOffsetX || 0}
-                onChange={handleChange}
-              />
-              <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
-            </SliderContainer>
-          </FormGroup>
-          
-          <FormGroup>
-            <Label htmlFor="bannerOffsetY">Vertical Position</Label>
-            <SliderContainer>
-              <Input
-                type="range"
-                id="bannerOffsetY"
-                name="bannerOffsetY"
-                min="-50"
-                max="50"
-                value={settings.bannerOffsetY || 0}
-                onChange={handleChange}
-              />
-              <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
-            </SliderContainer>
-          </FormGroup>
-        </SectionContent>
-      </FormSection>
-      
-      {/* 3. Text */}
+      {/* 2. Text */}
+
       <FormSection>
         <SectionHeader onClick={() => toggleSection('text')}>
-          <SectionTitle>Text</SectionTitle>
+          <SectionTitle>Banner</SectionTitle>
           <ChevronIcon>
             {expandedSections.text ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>
@@ -495,6 +437,34 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     onChange={handleChange}
                   />
                   <SliderValue>{settings.subtitleFontSize}px</SliderValue>
+                </SliderContainer>
+                
+                <Label htmlFor="subtitleOffsetX" style={{ marginTop: '0.5rem' }}>Subtitle Horizontal Position</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="subtitleOffsetX"
+                    name="subtitleOffsetX"
+                    min="-50"
+                    max="50"
+                    value={settings.subtitleOffsetX || 0}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.subtitleOffsetX || 0}</SliderValue>
+                </SliderContainer>
+                
+                <Label htmlFor="subtitleOffsetY" style={{ marginTop: '0.5rem' }}>Subtitle Vertical Position</Label>
+                <SliderContainer>
+                  <Input
+                    type="range"
+                    id="subtitleOffsetY"
+                    name="subtitleOffsetY"
+                    min="-50"
+                    max="50"
+                    value={settings.subtitleOffsetY || 0}
+                    onChange={handleChange}
+                  />
+                  <SliderValue>{settings.subtitleOffsetY || 0}</SliderValue>
                 </SliderContainer>
               </>
             )}
@@ -593,7 +563,66 @@ function BannerGenerator({ settings, onSettingsChange }) {
           )}
         </SectionContent>
       </FormSection>
-      
+
+      {/* 3. Position & Size */}
+      <FormSection>
+        <SectionHeader onClick={() => toggleSection('position')}>
+          <SectionTitle>Banner Position & Size</SectionTitle>
+          <ChevronIcon>
+            {expandedSections.position ? <FaChevronUp /> : <FaChevronDown />}
+          </ChevronIcon>
+        </SectionHeader>
+        <SectionContent $isExpanded={expandedSections.position}>
+          <FormGroup>
+            <Label htmlFor="bannerScale">Banner Scale</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="bannerScale"
+                name="bannerScale"
+                min="50"
+                max="150"
+                value={settings.bannerScale || 100}
+                onChange={handleChange}
+              />
+              <SliderValue>{settings.bannerScale || 100}%</SliderValue>
+            </SliderContainer>
+          </FormGroup>
+        
+          <FormGroup>
+            <Label htmlFor="bannerOffsetX">Horizontal Position</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="bannerOffsetX"
+                name="bannerOffsetX"
+                min="-50"
+                max="50"
+                value={settings.bannerOffsetX || 0}
+                onChange={handleChange}
+              />
+              <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
+            </SliderContainer>
+          </FormGroup>
+          
+          <FormGroup>
+            <Label htmlFor="bannerOffsetY">Vertical Position</Label>
+            <SliderContainer>
+              <Input
+                type="range"
+                id="bannerOffsetY"
+                name="bannerOffsetY"
+                min="-50"
+                max="50"
+                value={settings.bannerOffsetY || 0}
+                onChange={handleChange}
+              />
+              <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
+            </SliderContainer>
+          </FormGroup>
+        </SectionContent>
+      </FormSection>
+
       {/* 4. Banner Image */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('bannerImage')}>
@@ -686,7 +715,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
       {/* 4. Shape */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('shape')}>
-          <SectionTitle>Shape</SectionTitle>
+          <SectionTitle>Banner Text Background Shape</SectionTitle>
           <ChevronIcon>
             {expandedSections.shape ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>
