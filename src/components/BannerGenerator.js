@@ -528,8 +528,33 @@ function BannerGenerator({ settings, onSettingsChange }) {
               <option value="Courier New">Courier New</option>
             </optgroup>
             
-            {/* Japanese Fonts */}
-            <optgroup label="Japanese Fonts">
+            {/* Custom Japanese Fonts */}
+            <optgroup label="Custom Japanese Fonts">
+              <option value="'Oshigo', sans-serif">Oshigo</option>
+              <option value="'Nagino', sans-serif">Nagino</option>
+              <option value="'Aomemo', sans-serif">Aomemo</option>
+              <option value="'Gisshiri', sans-serif">Gisshiri</option>
+              <option value="'Migikataagari', sans-serif">Migikataagari</option>
+              <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
+              <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
+              <option value="'Karakaze', sans-serif">Karakaze</option>
+              <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
+              <option value="'IoEI', sans-serif">IoEI</option>
+              <option value="'BrushTappitsu', sans-serif">筆達筆</option>
+              <option value="'AprilGothic', sans-serif">April Gothic</option>
+              <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
+              <option value="'KSentai', sans-serif">K戦隊</option>
+              <option value="'Kirin', sans-serif">麒麟</option>
+              <option value="'Keee', sans-serif">KEEE!</option>
+              <option value="'KKotaro', sans-serif">K小太郎</option>
+              <option value="'KHongo', sans-serif">K本合</option>
+              <option value="'Potejiface', sans-serif">ポテジフェイス</option>
+              <option value="'AstroZ', sans-serif">AstroZ</option>
+            </optgroup>
+            
+            {/* Google Japanese Fonts */}
+            <optgroup label="Google Japanese Fonts">
+              <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
               <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
               <option value="'Noto Serif JP', serif">Noto Serif JP</option>
               <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>

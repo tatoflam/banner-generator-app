@@ -94,5 +94,30 @@ banner-generator-app/
 └── README.md         # Project documentation
 ```
 
+## Custom Fonts
+
+The application includes several custom Japanese fonts:
+
+1. Oshigo: `assets/font/oshigo.otf`
+2. Nagino: `assets/font/nagino.otf`
+3. Aomemo Font: `assets/font/AomemoFont-Regular.otf` - [Download from Booth](https://booth.pm/ja/items/118072)
+4. Gisshiri: `assets/font/Gisshiri.ttf`
+5. Migikataagari: `assets/font/migikataagari.ttf`
+6. 玉ねぎ楷書激無料版v7改: `assets/font/玉ねぎ楷書激無料版v7改.ttf`
+7. AkazukiPop: `assets/font/AkazukiPOP.ttf`
+8. Karakaze-R: `assets/font/karakaze-R.otf`
+9. ZeroGothic: `assets/font/ZeroGothic.otf`
+10. IoEI: `assets/font/IoEI.ttf`
+11. 筆達筆: `assets/font/g_brushtappitsu_freeB.ttf`
+12. April Gothic: `assets/font/AprilGothicOne-R.ttf`
+13. ミシミシブロック: `assets/font/MISHIMISHI-BLOCK.otf`
+14. K戦隊: `assets/font/KSENTAI.ttf`
+15. 麒麟: `assets/font/kirin-Regular.ttf`
+16. KEEE!: `assets/font/KEEE!.ttf`
+17. K小太郎: `assets/font/KKOTARO.ttf`
+18. K本合: `assets/font/KHONGO.ttf`
+19. ポテジフェイス: `assets/font/Potejiface-Regular.otf`
+20. AstroZ: `assets/font/AstroZ-KtD.otf`
+
 ## License
 Copyright@ emile, inc.
