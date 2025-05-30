@@ -243,102 +243,113 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
       console.log('Banner element computed style width:', window.getComputedStyle(bannerElement).width);
       console.log('Banner element computed style height:', window.getComputedStyle(bannerElement).height);
       
-      // Now that the API key is validated, ask if we should include text in the refinement
-      const includeText = window.confirm('Include text in the refinement? Click OK to include text, or Cancel to refine only the background.');
+      // Now that the API key is validated, ask if we should include text in the AI prompt
+      const includeTextInPrompt = window.confirm('Include text in the AI prompt? Click OK to include text in the prompt, or Cancel to refine only the background (text will still be visible in the final result).');
       
-      // Store references to text elements that might be hidden
-      const textElements = bannerElement.querySelectorAll('.banner-text');
-      
-      // If we're not including text, temporarily hide it
-      if (!includeText) {
-        textElements.forEach(el => {
-          el.dataset.originalDisplay = el.style.display || '';
-          el.style.display = 'none';
-        });
-      }
+      // Note: We're not hiding the text elements anymore, as we want the text to be visible in the final result
+      // We're just controlling whether to include text in the AI prompt
 
       // Import html-to-image dynamically
       console.log('Importing html-to-image');
       const htmlToImage = await import('html-to-image');
       
-      // Capture the banner as a data URL - ensure we capture exactly what's shown in the preview
-      console.log('Capturing banner as PNG');
+      // Create a canvas to capture the preview area exactly as it appears
+      console.log('Creating canvas to capture preview area');
       
-      // Configure the capture options to ensure we get the exact visual representation
-      // Set skipFonts to true to avoid font loading errors
-      const captureOptions = {
-        quality: 1.0,
-        pixelRatio: window.devicePixelRatio,
-        skipFonts: true, // Skip loading fonts to prevent resource errors
-        // Ensure background images and colors are captured
-        backgroundColor: settings.backgroundColor || '#ffffff',
-        style: {
-          backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
-          backgroundPosition: 'center'
-        },
-        // Use the exact dimensions of the banner element
-        width: bannerElement.clientWidth,
-        height: bannerElement.clientHeight,
-        // Suppress console errors during capture
-        onclone: (clonedDoc) => {
-          // Add a style to ensure text renders correctly even with skipFonts: true
-          const style = clonedDoc.createElement('style');
-          style.innerHTML = `
-            * {
-              font-family: ${settings.fontFamily || 'Arial, sans-serif'} !important;
-              box-sizing: border-box;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
-        }
-      };
-      // Temporarily suppress console errors
-      const originalConsoleError = console.error;
-      console.error = (msg) => {
-        // Only log errors that aren't related to font loading
-        if (!msg || (typeof msg === 'string' && !msg.includes('fonts.gstatic.com'))) {
-          originalConsoleError(msg);
-        }
-      };
+      // Get the exact dimensions of the preview area
+      const width = bannerElement.clientWidth;
+      const height = bannerElement.clientHeight;
       
-      let dataUrl;
-      try {
-        // Capture the preview area exactly as it appears
-        dataUrl = await htmlToImage.toPng(bannerElement, captureOptions);
-        console.log('Banner captured as data URL:', dataUrl.substring(0, 50) + '...');
-      } finally {
-        // Restore console.error
-        console.error = originalConsoleError;
+      console.log(`Preview area dimensions: ${width}x${height}`);
+      
+      // Create a canvas element
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas dimensions with device pixel ratio for higher quality
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      
+      // Fill the canvas with the background color
+      ctx.fillStyle = settings.backgroundColor || '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      
+      // If there's a background image, draw it
+      if (settings.backgroundImage) {
+        // Create a new Image element
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
         
-        // Restore any hidden text elements
-        if (!includeText) {
-          textElements.forEach(el => {
-            el.style.display = el.dataset.originalDisplay;
-          });
+        // Wait for the image to load
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = settings.backgroundImage;
+        });
+        
+        // Draw the image to fill the canvas
+        ctx.drawImage(img, 0, 0, width, height);
+      }
+      
+      // If text is enabled and should be included in the prompt, draw it on the canvas for the API
+      if (settings.showTextOnBackground !== false && includeTextInPrompt) {
+        // Get the text element from the preview
+        const textElement = bannerElement.querySelector('.banner-text');
+        if (textElement) {
+          // Get the computed style of the text element
+          const textStyle = window.getComputedStyle(textElement);
+          
+          // Set the font for the main text
+          ctx.font = `${settings.fontSize}px ${settings.fontFamily}`;
+          ctx.fillStyle = settings.fontColor;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Draw the main text
+          const textX = width / 2;
+          const textY = height / 2 - (settings.subtitleVisible ? settings.fontSize / 4 : 0);
+          ctx.fillText(settings.text, textX, textY);
+          
+          // If subtitle is enabled, draw it
+          if (settings.subtitleVisible && settings.subtitle) {
+            ctx.font = `${settings.subtitleFontSize}px ${settings.fontFamily}`;
+            
+            // Calculate position for subtitle (right-aligned)
+            const subtitleWidth = ctx.measureText(settings.subtitle).width;
+            const subtitleX = width / 2 + subtitleWidth / 2;
+            const subtitleY = textY + settings.fontSize / 2 + settings.subtitleFontSize / 2 + 2;
+            
+            ctx.fillText(settings.subtitle, subtitleX, subtitleY);
+          }
         }
       }
+      
+      // Convert canvas to data URL
+      const dataUrl = canvas.toDataURL('image/png');
+      console.log('Banner captured as data URL:', dataUrl.substring(0, 50) + '...');
       
       // Debug: Log the banner element and its contents
       console.log('Banner element:', bannerElement);
       console.log('Banner element innerHTML:', bannerElement.innerHTML);
       console.log('Banner element children:', bannerElement.children);
       
-      // Get the dimensions of the banner element
-      let width, height;
+      // Get the dimensions for API request
+      let apiRequestWidth, apiRequestHeight;
       
       // If settings are available and custom dimensions are enabled, use those dimensions
       if (settings && settings.customBackgroundDimensions) {
-        width = settings.backgroundWidth;
-        height = settings.backgroundHeight;
-        console.log('Using custom dimensions from settings:', width, 'x', height);
+        apiRequestWidth = settings.backgroundWidth;
+        apiRequestHeight = settings.backgroundHeight;
+        console.log('Using custom dimensions from settings:', apiRequestWidth, 'x', apiRequestHeight);
       } else {
         // Otherwise use the client dimensions
-        width = bannerElement.clientWidth;
-        height = bannerElement.clientHeight;
-        console.log('Using client dimensions:', width, 'x', height);
+        apiRequestWidth = width;
+        apiRequestHeight = height;
+        console.log('Using client dimensions:', apiRequestWidth, 'x', apiRequestHeight);
       }
       
-      console.log('Banner dimensions:', width, 'x', height);
+      console.log('Banner dimensions for API request:', apiRequestWidth, 'x', apiRequestHeight);
       
       // Analyze the banner to extract key characteristics
       // This will help us generate a similar banner with the same style
