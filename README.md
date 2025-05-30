@@ -17,15 +17,13 @@ A web application that generates custom logos based on user input.
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/tatoflam/logo-generator-app.git
+git clone https://github.com/tatoflam/banner-generator-app.git
 
 # Navigate to the project directory
-cd logo-generator-app
+cd banner-generator-app
 
 # Install dependencies
 npm install
-# or
-yarn install
 ```
 
 ### Development
@@ -49,4 +47,4 @@ logo-generator-app/
 ```
 
 ## License
-[MIT](LICENSE)
+Copyright@ emile, inc.
