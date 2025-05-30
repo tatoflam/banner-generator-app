@@ -180,201 +180,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
     <GeneratorContainer>
       <h2>Banner Settings</h2>
       
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('text')}>
-          <SectionTitle>Text</SectionTitle>
-          <ChevronIcon>
-            {expandedSections.text ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.text}>
-        <FormGroup>
-          <Label htmlFor="text">Banner Text</Label>
-          <Input
-            type="text"
-            id="text"
-            name="text"
-            value={settings.text}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <input
-              type="checkbox"
-              id="subtitleVisible"
-              name="subtitleVisible"
-              checked={settings.subtitleVisible}
-              onChange={(e) => {
-                onSettingsChange({ subtitleVisible: e.target.checked });
-              }}
-              style={{ marginRight: '0.5rem' }}
-            />
-            <Label htmlFor="subtitleVisible">Show Subtitle</Label>
-          </div>
-          
-          {settings.subtitleVisible && (
-            <>
-              <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
-              <Input
-                type="text"
-                id="subtitle"
-                name="subtitle"
-                value={settings.subtitle}
-                onChange={handleChange}
-                placeholder="第1回"
-              />
-              
-              <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
-              <SliderContainer>
-                <Input
-                  type="range"
-                  id="subtitleFontSize"
-                  name="subtitleFontSize"
-                  min="8"
-                  max="36"
-                  value={settings.subtitleFontSize}
-                  onChange={handleChange}
-                />
-                <SliderValue>{settings.subtitleFontSize}px</SliderValue>
-              </SliderContainer>
-            </>
-          )}
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontFamily">Font Family</Label>
-          <Select
-            id="fontFamily"
-            name="fontFamily"
-            defaultValue="'Zen Maru Gothic', sans-serif"
-            onChange={handleChange}
-          >
-            {/* Western Fonts */}
-            <optgroup label="Western Fonts">
-              <option value="Arial">Arial</option>
-              <option value="Verdana">Verdana</option>
-              <option value="Helvetica">Helvetica</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Courier New">Courier New</option>
-            </optgroup>
-            
-            {/* Japanese Fonts */}
-            <optgroup label="Japanese Fonts">
-              <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
-              <option value="'Noto Serif JP', serif">Noto Serif JP</option>
-              <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
-              <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
-              <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
-              <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
-              <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
-              <option value="'Shippori Mincho', serif">Shippori Mincho</option>
-              <option value="'Yuji Syuku', serif">Yuji Syuku</option>
-              <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
-              <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
-              <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
-            </optgroup>
-          </Select>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontSize">Font Size</Label>
-          <SliderContainer>
-            <Input
-              type="range"
-              id="fontSize"
-              name="fontSize"
-              min="12"
-              max="72"
-              value={settings.fontSize}
-              onChange={handleChange}
-            />
-            <SliderValue>{settings.fontSize}px</SliderValue>
-          </SliderContainer>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="fontColor">Font Color</Label>
-          <ColorInput
-            type="color"
-            id="fontColor"
-            name="fontColor"
-            value={settings.fontColor}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        </SectionContent>
-      </FormSection>
-      
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('shape')}>
-          <SectionTitle>Shape</SectionTitle>
-          <ChevronIcon>
-            {expandedSections.shape ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.shape}>
-        <FormGroup>
-          <Label htmlFor="shape">Background Shape</Label>
-          <Select
-            id="shape"
-            name="shape"
-            value={settings.shape}
-            onChange={handleChange}
-          >
-            <option value="none">None</option>
-            <option value="circle">Circle</option>
-            <option value="square">Square</option>
-            <option value="rectangle">Rectangle</option>
-          </Select>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label>Shape Image</Label>
-          <BackgroundPreviewContainer>
-            {imageOptions.map((image, index) => (
-              <BackgroundPreview 
-                key={index}
-                src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
-                selected={settings.shapeImage === image.path}
-                onClick={() => handleShapeImageSelect(image.path)}
-                title={image.name}
-              />
-            ))}
-          </BackgroundPreviewContainer>
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="shapeColor">Shape Color (when no image)</Label>
-          <ColorInput
-            type="color"
-            id="shapeColor"
-            name="shapeColor"
-            value={settings.shapeColor}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="shapeSize">Shape Size</Label>
-          <SliderContainer>
-            <Input
-              type="range"
-              id="shapeSize"
-              name="shapeSize"
-              min="30"
-              max="100"
-              value={settings.shapeSize || 80}
-              onChange={handleChange}
-            />
-            <SliderValue>{settings.shapeSize || 80}%</SliderValue>
-          </SliderContainer>
-        </FormGroup>
-        </SectionContent>
-      </FormSection>
-      
-      
+      {/* 1. Background */}
       <div style={{ marginBottom: '20px', borderBottom: '1px solid #ddd' }}>
         <div 
           style={{ 
@@ -575,6 +381,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
         )}
       </div>
       
+      {/* 2. Position & Size */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('position')}>
           <SectionTitle>Position & Size</SectionTitle>
@@ -639,6 +446,202 @@ function BannerGenerator({ settings, onSettingsChange }) {
           </FormGroup>
         </div>
       )}
+      
+      {/* 3. Text */}
+      <FormSection>
+        <SectionHeader onClick={() => toggleSection('text')}>
+          <SectionTitle>Text</SectionTitle>
+          <ChevronIcon>
+            {expandedSections.text ? <FaChevronUp /> : <FaChevronDown />}
+          </ChevronIcon>
+        </SectionHeader>
+        <SectionContent $isExpanded={expandedSections.text}>
+        <FormGroup>
+          <Label htmlFor="text">Banner Text</Label>
+          <Input
+            type="text"
+            id="text"
+            name="text"
+            value={settings.text}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id="subtitleVisible"
+              name="subtitleVisible"
+              checked={settings.subtitleVisible}
+              onChange={(e) => {
+                onSettingsChange({ subtitleVisible: e.target.checked });
+              }}
+              style={{ marginRight: '0.5rem' }}
+            />
+            <Label htmlFor="subtitleVisible">Show Subtitle</Label>
+          </div>
+          
+          {settings.subtitleVisible && (
+            <>
+              <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
+              <Input
+                type="text"
+                id="subtitle"
+                name="subtitle"
+                value={settings.subtitle}
+                onChange={handleChange}
+                placeholder="第1回"
+              />
+              
+              <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
+              <SliderContainer>
+                <Input
+                  type="range"
+                  id="subtitleFontSize"
+                  name="subtitleFontSize"
+                  min="8"
+                  max="36"
+                  value={settings.subtitleFontSize}
+                  onChange={handleChange}
+                />
+                <SliderValue>{settings.subtitleFontSize}px</SliderValue>
+              </SliderContainer>
+            </>
+          )}
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="fontFamily">Font Family</Label>
+          <Select
+            id="fontFamily"
+            name="fontFamily"
+            defaultValue="'Zen Maru Gothic', sans-serif"
+            onChange={handleChange}
+          >
+            {/* Western Fonts */}
+            <optgroup label="Western Fonts">
+              <option value="Arial">Arial</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Courier New">Courier New</option>
+            </optgroup>
+            
+            {/* Japanese Fonts */}
+            <optgroup label="Japanese Fonts">
+              <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+              <option value="'Noto Serif JP', serif">Noto Serif JP</option>
+              <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
+              <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
+              <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
+              <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
+              <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
+              <option value="'Shippori Mincho', serif">Shippori Mincho</option>
+              <option value="'Yuji Syuku', serif">Yuji Syuku</option>
+              <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
+              <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
+              <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
+            </optgroup>
+          </Select>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="fontSize">Font Size</Label>
+          <SliderContainer>
+            <Input
+              type="range"
+              id="fontSize"
+              name="fontSize"
+              min="12"
+              max="72"
+              value={settings.fontSize}
+              onChange={handleChange}
+            />
+            <SliderValue>{settings.fontSize}px</SliderValue>
+          </SliderContainer>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="fontColor">Font Color</Label>
+          <ColorInput
+            type="color"
+            id="fontColor"
+            name="fontColor"
+            value={settings.fontColor}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        </SectionContent>
+      </FormSection>
+      
+      {/* 4. Shape */}
+      <FormSection>
+        <SectionHeader onClick={() => toggleSection('shape')}>
+          <SectionTitle>Shape</SectionTitle>
+          <ChevronIcon>
+            {expandedSections.shape ? <FaChevronUp /> : <FaChevronDown />}
+          </ChevronIcon>
+        </SectionHeader>
+        <SectionContent $isExpanded={expandedSections.shape}>
+        <FormGroup>
+          <Label htmlFor="shape">Background Shape</Label>
+          <Select
+            id="shape"
+            name="shape"
+            value={settings.shape}
+            onChange={handleChange}
+          >
+            <option value="none">None</option>
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="rectangle">Rectangle</option>
+          </Select>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label>Shape Image</Label>
+          <BackgroundPreviewContainer>
+            {imageOptions.map((image, index) => (
+              <BackgroundPreview 
+                key={index}
+                src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
+                selected={settings.shapeImage === image.path}
+                onClick={() => handleShapeImageSelect(image.path)}
+                title={image.name}
+              />
+            ))}
+          </BackgroundPreviewContainer>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="shapeColor">Shape Color (when no image)</Label>
+          <ColorInput
+            type="color"
+            id="shapeColor"
+            name="shapeColor"
+            value={settings.shapeColor}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="shapeSize">Shape Size</Label>
+          <SliderContainer>
+            <Input
+              type="range"
+              id="shapeSize"
+              name="shapeSize"
+              min="30"
+              max="100"
+              value={settings.shapeSize || 80}
+              onChange={handleChange}
+            />
+            <SliderValue>{settings.shapeSize || 80}%</SliderValue>
+          </SliderContainer>
+        </FormGroup>
+        </SectionContent>
+      </FormSection>
     </GeneratorContainer>
   );
 }
