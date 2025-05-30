@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/banner-generator-app/static/js/main.a7ac7f9a.js",
+    "static/js/316.da5190eb.chunk.js": "/banner-generator-app/static/js/316.da5190eb.chunk.js",
+    "index.html": "/banner-generator-app/index.html",
+    "main.a7ac7f9a.js.map": "/banner-generator-app/static/js/main.a7ac7f9a.js.map",
+    "316.da5190eb.chunk.js.map": "/banner-generator-app/static/js/316.da5190eb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.a7ac7f9a.js"
+  ]
+}
