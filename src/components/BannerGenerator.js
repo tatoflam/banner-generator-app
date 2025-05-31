@@ -48,11 +48,34 @@ const SectionHeader = styled.div`
   }
 `;
 
-const SectionTitle = styled.h3`
+const SectionTitle = styled.div`
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 1.2rem;
   color: #333;
+  
+  &.h2 {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  
+  &.h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
+  
+  &.h4 {
+    font-size: 1.1rem;
+    font-weight: normal;
+    margin-left: 1rem;
+  }
+  
+  &.h5 {
+    font-size: 1rem;
+    font-weight: normal;
+    margin-left: 1.5rem;
+    font-style: italic;
+  }
 `;
 
 const SectionContent = styled.div`
@@ -136,11 +159,10 @@ const ColorInput = styled.input`
 function BannerGenerator({ settings, onSettingsChange }) {
   const [imageOptions, setImageOptions] = useState([]);
   const [expandedSections, setExpandedSections] = useState({
-    text: true,
-    bannerImage: false,
-    shape: false,
     background: false,
-    position: false
+    position: false,
+    text: true,
+    shape: false
   });
   
   const toggleSection = (section) => {
@@ -331,12 +353,11 @@ function BannerGenerator({ settings, onSettingsChange }) {
           </FormGroup>
         </SectionContent>
       </FormSection>
-      
-      {/* 2. Text */}
 
+      {/* 2. Banner Title */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('text')}>
-          <SectionTitle>Banner</SectionTitle>
+          <SectionTitle>Banner Title</SectionTitle>
           <ChevronIcon>
             {expandedSections.text ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>
@@ -542,10 +563,10 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </SectionContent>
       </FormSection>
 
-      {/* 3. Position & Size */}
+      {/* 3. Banner Title Position & Size */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('position')}>
-          <SectionTitle>Banner Position & Size</SectionTitle>
+          <SectionTitle>Banner Title Position & Size</SectionTitle>
           <ChevronIcon>
             {expandedSections.position ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>
@@ -601,99 +622,11 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </SectionContent>
       </FormSection>
 
-      {/* 4. Banner Image */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('bannerImage')}>
-          <SectionTitle>Banner Image</SectionTitle>
-          <ChevronIcon>
-            {expandedSections.bannerImage ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.bannerImage}>
-          <FormGroup>
-            <Label>Banner Image</Label>
-            <div style={{ marginBottom: '1rem' }}>
-              <img 
-                src={`${process.env.PUBLIC_URL}/assets/image/title/すっぱくろ題字_01.png`} 
-                alt="Banner Title" 
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '300px', 
-                  display: 'block', 
-                  margin: '0 auto',
-                  border: settings.useBannerImage ? '2px solid #4CAF50' : '1px solid #ddd',
-                  borderRadius: '4px',
-                  padding: '5px',
-                  backgroundColor: settings.useBannerImage ? '#e8f5e9' : 'transparent'
-                }} 
-              />
-            </div>
-            
-            <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1rem', textAlign: 'center' }}>
-              {settings.useBannerImage ? 
-                'Banner image is currently enabled. Adjust settings below.' : 
-                'Enable "Use Banner Image" in the Text section to use this image.'}
-            </div>
-          </FormGroup>
-          
-          {settings.useBannerImage && (
-            <>
-              <FormGroup>
-                <Label htmlFor="bannerImageScale">Banner Image Scale</Label>
-                <SliderContainer>
-                  <Input
-                    type="range"
-                    id="bannerImageScale"
-                    name="bannerImageScale"
-                    min="50"
-                    max="150"
-                    value={settings.bannerImageScale || 100}
-                    onChange={handleChange}
-                  />
-                  <SliderValue>{settings.bannerImageScale || 100}%</SliderValue>
-                </SliderContainer>
-              </FormGroup>
-              
-              <FormGroup>
-                <Label htmlFor="bannerImageOffsetX">Horizontal Position</Label>
-                <SliderContainer>
-                  <Input
-                    type="range"
-                    id="bannerImageOffsetX"
-                    name="bannerImageOffsetX"
-                    min="-50"
-                    max="50"
-                    value={settings.bannerImageOffsetX || 0}
-                    onChange={handleChange}
-                  />
-                  <SliderValue>{settings.bannerImageOffsetX || 0}</SliderValue>
-                </SliderContainer>
-              </FormGroup>
-              
-              <FormGroup>
-                <Label htmlFor="bannerImageOffsetY">Vertical Position</Label>
-                <SliderContainer>
-                  <Input
-                    type="range"
-                    id="bannerImageOffsetY"
-                    name="bannerImageOffsetY"
-                    min="-50"
-                    max="50"
-                    value={settings.bannerImageOffsetY || 0}
-                    onChange={handleChange}
-                  />
-                  <SliderValue>{settings.bannerImageOffsetY || 0}</SliderValue>
-                </SliderContainer>
-              </FormGroup>
-            </>
-          )}
-        </SectionContent>
-      </FormSection>
-      
-      {/* 4. Shape */}
+
+      {/* 4. Banner Title Background Shape */}
       <FormSection>
         <SectionHeader onClick={() => toggleSection('shape')}>
-          <SectionTitle>Banner Text Background Shape</SectionTitle>
+          <SectionTitle>Banner Title Background Shape</SectionTitle>
           <ChevronIcon>
             {expandedSections.shape ? <FaChevronUp /> : <FaChevronDown />}
           </ChevronIcon>

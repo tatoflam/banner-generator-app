@@ -41,7 +41,7 @@ const MainContent = styled.main`
   }
 `;
 
-const RightColumn = styled.div`
+const LeftColumn = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -96,11 +96,7 @@ function App() {
         <p>Create your custom banner in seconds</p>
       </Header>
       <MainContent>
-        <BannerGenerator 
-          settings={bannerSettings} 
-          onSettingsChange={handleSettingsChange} 
-        />
-        <RightColumn>
+        <LeftColumn>
           <BannerPreview 
             settings={bannerSettings} 
             bannerRef={bannerRef}
@@ -110,7 +106,11 @@ function App() {
             onRefinementComplete={handleRefinementComplete} 
             settings={bannerSettings}
           />
-        </RightColumn>
+        </LeftColumn>
+        <BannerGenerator 
+          settings={bannerSettings} 
+          onSettingsChange={handleSettingsChange} 
+        />
       </MainContent>
     </AppContainer>
   );
