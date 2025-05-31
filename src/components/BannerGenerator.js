@@ -582,7 +582,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 min="50"
                 max="150"
                 value={settings.bannerScale || 100}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  // Update both bannerScale (for text) and bannerImageScale (for image)
+                  onSettingsChange({ 
+                    bannerScale: value,
+                    bannerImageScale: value 
+                  });
+                }}
               />
               <SliderValue>{settings.bannerScale || 100}%</SliderValue>
             </SliderContainer>
@@ -598,7 +605,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 min="-50"
                 max="50"
                 value={settings.bannerOffsetX || 0}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  // Update both bannerOffsetX (for text) and bannerImageOffsetX (for image)
+                  onSettingsChange({ 
+                    bannerOffsetX: value,
+                    bannerImageOffsetX: value 
+                  });
+                }}
               />
               <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
             </SliderContainer>
@@ -614,7 +628,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 min="-50"
                 max="50"
                 value={settings.bannerOffsetY || 0}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  // Update both bannerOffsetY (for text) and bannerImageOffsetY (for image)
+                  onSettingsChange({ 
+                    bannerOffsetY: value,
+                    bannerImageOffsetY: value 
+                  });
+                }}
               />
               <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
             </SliderContainer>
