@@ -149,50 +149,59 @@
   .previewContainer {
     padding: 0.75rem;
     border-radius: 4px;
-    width: 90%;
-    max-width: 90%;
+    width: 95%;
+    max-width: 95%;
+    min-width: 300px;
   }
   
   .previewArea {
-    max-width: 90%;
+    max-width: 95%;
+    min-width: 280px;
   }
   
   .buttonContainer {
-    width: 90%;
+    width: 95%;
+    min-width: 280px;
   }
 }
 
 @media (max-width: 576px) {
   .previewContainer {
     padding: 0.5rem;
-    width: 85%;
-    max-width: 85%;
+    width: 95%;
+    max-width: 95%;
+    min-width: 280px;
   }
   
   .previewArea {
-    max-width: 85%;
+    max-width: 95%;
+    min-width: 260px;
   }
   
   .buttonContainer {
-    width: 85%;
+    width: 95%;
+    min-width: 260px;
   }
 }
 
 @media (max-width: 480px) {
   .previewContainer {
     padding: 0.5rem;
-    width: 80%;
-    max-width: 80%;
+    width: 95%;
+    max-width: 95%;
+    min-width: 260px;
   }
   
   .previewArea {
-    max-width: 80%;
+    max-width: 95%;
+    min-width: 240px;
   }
   
   .buttonContainer {
     flex-direction: column;
     gap: 0.5rem;
-    width: 80%;
+    width: 95%;
+    min-width: 240px;
   }
   
   .downloadButton {
@@ -205,32 +214,38 @@
 @media (max-width: 375px) {
   .previewContainer {
     padding: 0.4rem;
-    width: 75%;
-    max-width: 75%;
+    width: 95%;
+    max-width: 95%;
+    min-width: 240px;
   }
   
   .previewArea {
-    max-width: 75%;
+    max-width: 95%;
+    min-width: 220px;
   }
   
   .buttonContainer {
-    width: 75%;
+    width: 95%;
+    min-width: 220px;
   }
 }
 
 @media (max-width: 320px) {
   .previewContainer {
     padding: 0.3rem;
-    width: 70%;
-    max-width: 70%;
+    width: 95%;
+    max-width: 95%;
+    min-width: 220px;
   }
   
   .previewArea {
-    max-width: 70%;
+    max-width: 95%;
+    min-width: 200px;
   }
   
   .buttonContainer {
-    width: 70%;
+    width: 95%;
+    min-width: 200px;
   }
   
   .downloadButton {
