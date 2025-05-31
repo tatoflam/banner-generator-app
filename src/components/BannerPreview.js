@@ -69,7 +69,8 @@ function BannerPreview({ settings, bannerRef }) {
           backgroundColor: settings.backgroundColor,
           backgroundImage: settings.backgroundImage ? `url(${settings.backgroundImage})` : 'none',
           backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          maxWidth: '100%'
         }}
       >
         {/* Always show the refined image if available */}

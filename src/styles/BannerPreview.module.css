@@ -145,7 +145,22 @@
   }
   
   .previewArea {
-    max-width: 100%;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .previewArea {
+    max-width: 90% !important;
+    width: 90% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .previewArea {
+    max-width: 85% !important;
+    width: 85% !important;
   }
 }
 
