@@ -27,7 +27,7 @@
 .content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .previewSection {
@@ -53,7 +53,7 @@
   }
   
   .content {
-    gap: 1.5rem;
+    gap: 1rem;
   }
 }
 
