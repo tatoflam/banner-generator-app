@@ -65,12 +65,11 @@ function BannerPreview({ settings, bannerRef }) {
         style={{
           width: settings.customBackgroundDimensions ? `${settings.backgroundWidth}px` : '100%',
           height: settings.customBackgroundDimensions ? `${settings.backgroundHeight}px` : 'auto',
-          aspectRatio: settings.customBackgroundDimensions ? 'auto' : '1',
+          aspectRatio: settings.customBackgroundDimensions ? `${settings.backgroundWidth} / ${settings.backgroundHeight}` : '1',
           backgroundColor: settings.backgroundColor,
           backgroundImage: settings.backgroundImage ? `url(${settings.backgroundImage})` : 'none',
           backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
-          backgroundPosition: 'center',
-          maxWidth: settings.customBackgroundDimensions ? 'none' : undefined
+          backgroundPosition: 'center'
         }}
       >
         {/* Always show the refined image if available */}
