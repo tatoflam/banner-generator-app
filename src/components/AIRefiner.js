@@ -57,20 +57,22 @@ const StatusMessage = styled.div`
 `;
 
 const ApiKeyInput = styled.input`
-  width: 100%;
+  width: calc(100% - 1rem);
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 1rem;
+  margin-right: 1rem;
   background-color: ${props => props.$error ? '#fab4b4' : 'white'};
 `;
 
 const PromptTextarea = styled.textarea`
-  width: 100%;
+  width: calc(100% - 1rem);
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 1rem;
+  margin-right: 1rem;
   min-height: 100px;
   resize: vertical;
   font-family: Arial, sans-serif;
@@ -134,11 +136,12 @@ const resizeImage = (dataUrl, targetWidth, targetHeight) => {
 };
 
 const StylePresetSelect = styled.select`
-  width: 100%;
+  width: calc(100% - 1rem);
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 1rem;
+  margin-right: 1rem;
   font-family: Arial, sans-serif;
 `;
 
@@ -778,7 +781,7 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           console.log('Updating strength to:', value);
           setStrength(value);
         }}
-        style={{ width: '100%', marginBottom: '1rem' }}
+        style={{ width: 'calc(100% - 1rem)', marginRight: '1rem', marginBottom: '1rem' }}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.8rem', color: '#666' }}>
         <span>Subtle Changes</span>

@@ -72,7 +72,7 @@ function App() {
     bannerOffsetY: 0,
     refinedImageUrl: null,
     showTextOnBackground: true,
-    useBannerImage: false,
+    useBannerImage: true,
     bannerImage: `${process.env.PUBLIC_URL}/assets/image/title/すっぱくろ題字_01.png`,
     bannerImageScale: 100,
     bannerImageOffsetX: 0,
