@@ -1,61 +1,8 @@
 import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
 import BannerGenerator from './components/BannerGenerator';
 import BannerPreview from './components/BannerPreview';
 import AIRefiner from './components/AIRefiner';
-
-const AppContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-  font-family: Arial, sans-serif;
-  width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.25rem;
-  }
-`;
-
-const Header = styled.header`
-  text-align: center;
-  margin-bottom: 2rem;
-`;
-
-const MainContent = styled.main`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  
-  @media (max-width: 768px) {
-    gap: 0.75rem;
-  }
-  
-  @media (max-width: 480px) {
-    gap: 0.5rem;
-  }
-`;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const TwoColumnRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-`;
+import styles from './styles/App.module.css';
 
 function App() {
   const [bannerSettings, setBannerSettings] = useState({
@@ -101,31 +48,35 @@ function App() {
   };
 
   return (
-    <AppContainer>
-      <Header>
-        <h1>Suppakuro Generator</h1>
-        <p>Create your custom banner in seconds</p>
-      </Header>
-      <MainContent>
-        <Row>
+    <div className={styles.app}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Suppakuro Generator</h1>
+        <p className={styles.subtitle}>Create your custom banner in seconds</p>
+      </header>
+      <main className={styles.content}>
+        <div className={styles.previewSection}>
           <BannerPreview 
             settings={bannerSettings} 
             bannerRef={bannerRef}
           />
-        </Row>
-        <TwoColumnRow>
-          <BannerGenerator 
-            settings={bannerSettings} 
-            onSettingsChange={handleSettingsChange} 
-          />
-          <AIRefiner 
-            bannerRef={bannerRef} 
-            onRefinementComplete={handleRefinementComplete} 
-            settings={bannerSettings}
-          />
-        </TwoColumnRow>
-      </MainContent>
-    </AppContainer>
+        </div>
+        <div className={styles.controlsSection}>
+          <div className={styles.generatorSection}>
+            <BannerGenerator 
+              settings={bannerSettings} 
+              onSettingsChange={handleSettingsChange} 
+            />
+          </div>
+          <div className={styles.refinerSection}>
+            <AIRefiner 
+              bannerRef={bannerRef} 
+              onRefinementComplete={handleRefinementComplete} 
+              settings={bannerSettings}
+            />
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
 

@@ -1,88 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-
-const RefinerContainer = styled.div`
-  background-color: #f5f5f5;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-    margin-top: 0.75rem;
-    border-radius: 4px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-  }
-`;
-
-const Button = styled.button`
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 1rem;
-  
-  &:hover {
-    background-color: #45a049;
-  }
-  
-  &:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  @media (max-width: 480px) {
-    width: 100%;
-    padding: 0.75rem 0;
-  }
-`;
-
-const StatusMessage = styled.div`
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 4px;
-  background-color: ${props => props.type === 'error' ? '#ffebee' : '#e8f5e9'};
-  color: ${props => props.type === 'error' ? '#c62828' : '#2e7d32'};
-  display: ${props => props.message ? 'block' : 'none'};
-`;
-
-const ApiKeyInput = styled.input`
-  width: calc(100% - 1rem);
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  background-color: ${props => props.$error ? '#fab4b4' : 'white'};
-`;
-
-const PromptTextarea = styled.textarea`
-  width: calc(100% - 1rem);
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  min-height: 100px;
-  resize: vertical;
-  font-family: Arial, sans-serif;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-`;
+import styles from '../styles/AIRefiner.module.css';
 
 // Helper function to resize an image to the required dimensions
 const resizeImage = (dataUrl, targetWidth, targetHeight) => {
@@ -135,19 +52,6 @@ const resizeImage = (dataUrl, targetWidth, targetHeight) => {
   });
 };
 
-const StylePresetSelect = styled.select`
-  width: calc(100% - 1rem);
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  font-family: Arial, sans-serif;
-`;
-
-const StylePresetOption = styled.option`
-  padding: 0.5rem;
-`;
 
 function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
   // Read API key from environment variable if available
@@ -704,22 +608,23 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
   };
 
   return (
-    <RefinerContainer>
+    <div className={styles.refinerContainer}>
       <h2>AI Banner Refinement</h2>
       <p>Use Stability AI to enhance and refine your banner design.</p>
       
-      <Label htmlFor="apiKey">
+      <label className={styles.label} htmlFor="apiKey">
         Stability AI API Key{' '}
         <a 
           href="https://platform.stability.ai/" 
           target="_blank" 
           rel="noopener noreferrer" 
-          style={{ fontSize: '0.8rem', fontWeight: 'normal', color: '#2196F3' }}
+          className={styles.apiKeyLink}
         >
           Stability AI API?
         </a>
-      </Label>
-      <ApiKeyInput
+      </label>
+      <input
+        className={`${styles.apiKeyInput} ${apiKeyError ? styles.apiKeyInputError : ''}`}
         id="apiKey"
         type="password"
         placeholder="Enter your Stability AI API key"
@@ -728,11 +633,11 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           setApiKey(e.target.value);
           if (apiKeyError) setApiKeyError(false);
         }}
-        $error={apiKeyError}
       />
       
-      <Label htmlFor="userPrompt">Refinement Instructions</Label>
-      <PromptTextarea
+      <label className={styles.label} htmlFor="userPrompt">Refinement Instructions</label>
+      <textarea
+        className={styles.promptTextarea}
         id="userPrompt"
         placeholder="Describe how you want the AI to refine your banner..."
         value={userPrompt}
@@ -742,8 +647,9 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         }}
       />
       
-      <Label htmlFor="negativePrompt">Negative Prompt (what to avoid)</Label>
-      <PromptTextarea
+      <label className={styles.label} htmlFor="negativePrompt">Negative Prompt (what to avoid)</label>
+      <textarea
+        className={styles.promptTextarea}
         id="negativePrompt"
         placeholder="Describe what you want the AI to avoid in the refinement..."
         value={negativePrompt}
@@ -753,8 +659,9 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         }}
       />
       
-      <Label htmlFor="stylePreset">Style Preset</Label>
-      <StylePresetSelect
+      <label className={styles.label} htmlFor="stylePreset">Style Preset</label>
+      <select
+        className={styles.stylePresetSelect}
         id="stylePreset"
         value={stylePreset}
         onChange={(e) => {
@@ -763,14 +670,15 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
         }}
       >
         {stylePresets.map(preset => (
-          <StylePresetOption key={preset.value} value={preset.value}>
+          <option className={styles.stylePresetOption} key={preset.value} value={preset.value}>
             {preset.label}
-          </StylePresetOption>
+          </option>
         ))}
-      </StylePresetSelect>
+      </select>
       
-      <Label htmlFor="strength">Transformation Strength: {strength}%</Label>
+      <label className={styles.label} htmlFor="strength">Transformation Strength: {strength}%</label>
       <input
+        className={styles.strengthSlider}
         type="range"
         id="strength"
         min="1"
@@ -781,26 +689,30 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
           console.log('Updating strength to:', value);
           setStrength(value);
         }}
-        style={{ width: 'calc(100% - 1rem)', marginRight: '1rem', marginBottom: '1rem' }}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.8rem', color: '#666' }}>
+      <div className={styles.strengthLabels}>
         <span>Subtle Changes</span>
         <span>Dramatic Changes</span>
       </div>
       
-      <Button 
+      <button 
+        className={styles.button}
         onClick={refineWithAI} 
         disabled={isRefining}
       >
         {isRefining ? 'Refining...' : 'Refine with AI'}
-      </Button>
+      </button>
       
       {message && (
-        <StatusMessage type={messageType}>
+        <div className={`${styles.statusMessage} ${
+          messageType === 'error' ? styles.statusError : 
+          messageType === 'success' ? styles.statusSuccess : 
+          styles.statusInfo
+        }`}>
           {message}
-        </StatusMessage>
+        </div>
       )}
-    </RefinerContainer>
+    </div>
   );
 }
 

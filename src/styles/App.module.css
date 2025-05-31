@@ -1,0 +1,97 @@
+/* App.module.css */
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.previewSection {
+  grid-column: 1 / -1;
+}
+
+.controlsSection {
+  display: contents;
+}
+
+.generatorSection {
+  grid-column: 1;
+}
+
+.refinerSection {
+  grid-column: 2;
+}
+
+/* Media Queries */
+@media (max-width: 992px) {
+  .app {
+    padding: 1.5rem;
+  }
+  
+  .content {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .generatorSection,
+  .refinerSection {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .header {
+    margin-bottom: 1.5rem;
+  }
+}

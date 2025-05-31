@@ -1,157 +1,6 @@
 import React, { useRef } from 'react';
-import styled from 'styled-components';
+import styles from '../styles/BannerPreview.module.css';
 // Import html-to-image dynamically when needed instead of at the top level
-
-const PreviewContainer = styled.div`
-  background-color: #f5f5f5;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-    border-radius: 4px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.5rem;
-  }
-`;
-
-const PreviewArea = styled.div`
-  width: ${props => props.$customBackgroundDimensions ? `${props.$backgroundWidth}px` : '100%'};
-  height: ${props => props.$customBackgroundDimensions ? `${props.$backgroundHeight}px` : 'auto'};
-  aspect-ratio: ${props => props.$customBackgroundDimensions ? 'auto' : '1'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${props => props.$backgroundColor};
-  background-image: ${props => props.$backgroundImage ? `url(${props.$backgroundImage})` : 'none'};
-  background-size: ${props => {
-    // Always apply background size regardless of custom dimensions
-    return props.$backgroundSize ? `${props.$backgroundSize}%` : 'cover';
-  }};
-  background-position: center;
-  border: 1px solid #ddd;
-  position: relative;
-  overflow: hidden;
-  max-width: 100%;
-  margin: 0 auto 1.5rem;
-`;
-
-const BannerText = styled.div`
-  font-family: ${props => props.$fontFamily};
-  font-size: ${props => props.$fontSize}px;
-  color: ${props => props.$fontColor};
-  text-align: center;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  
-  ${props => {
-    const shapeStyles = [];
-    
-    // Base shape styles
-    if (props.$shape === 'circle') {
-      shapeStyles.push(`
-        border-radius: 50%;
-        width: ${props.$shapeSize || 80}%;
-        height: ${props.$shapeSize || 80}%;
-      `);
-    } else if (props.$shape === 'square') {
-      shapeStyles.push(`
-        width: ${props.$shapeSize || 80}%;
-        height: ${props.$shapeSize || 80}%;
-      `);
-    } else if (props.$shape === 'rectangle') {
-      shapeStyles.push(`
-        width: ${props.$shapeSize || 80}%;
-        height: ${Math.floor((props.$shapeSize || 80) * 0.6)}%;
-      `);
-    }
-    
-    // Add background image or color
-    if (props.$shapeImage) {
-      shapeStyles.push(`
-        background-image: url(${props.$shapeImage});
-        background-size: cover;
-        background-position: center;
-      `);
-    } else if (props.$shape !== 'none') {
-      shapeStyles.push(`
-        background-color: ${props.$shapeColor};
-      `);
-    }
-    
-    // Common styles for all shapes
-    if (props.$shape !== 'none') {
-      shapeStyles.push(`
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      `);
-    }
-    
-    return shapeStyles.join('');
-  }}
-`;
-
-const DownloadButton = styled.button`
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-right: 0.5rem;
-  
-  &:hover {
-    background-color: #45a049;
-  }
-  
-  &:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  @media (max-width: 480px) {
-    width: 100%;
-    margin-right: 0;
-    padding: 0.75rem 0;
-  }
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  width: 100%;
-  justify-content: center;
-  
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-`;
-
-const RefinedImage = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Changed from contain to cover to fill the entire area */
-  z-index: 10; /* Ensure it's above other elements */
-`;
 
 function BannerPreview({ settings, bannerRef }) {
   const previewRef = useRef(null);
@@ -208,60 +57,53 @@ function BannerPreview({ settings, bannerRef }) {
   };
 
   return (
-    <PreviewContainer>
+    <div className={styles.previewContainer}>
       <h2>Banner Preview</h2>
-      <PreviewArea 
+      <div 
         ref={previewRef}
-        className="preview-area"
-        $backgroundColor={settings.backgroundColor}
-        $backgroundImage={settings.backgroundImage}
-        $backgroundSize={settings.backgroundSize}
-        $customBackgroundDimensions={settings.customBackgroundDimensions}
-        $backgroundWidth={settings.backgroundWidth}
-        $backgroundHeight={settings.backgroundHeight}
+        className={`${styles.previewArea} preview-area`}
+        style={{
+          width: settings.customBackgroundDimensions ? `${settings.backgroundWidth}px` : '100%',
+          height: settings.customBackgroundDimensions ? `${settings.backgroundHeight}px` : 'auto',
+          aspectRatio: settings.customBackgroundDimensions ? 'auto' : '1',
+          backgroundColor: settings.backgroundColor,
+          backgroundImage: settings.backgroundImage ? `url(${settings.backgroundImage})` : 'none',
+          backgroundSize: settings.backgroundSize ? `${settings.backgroundSize}%` : 'cover',
+          backgroundPosition: 'center'
+        }}
       >
         {/* Always show the refined image if available */}
         {settings.refinedImageUrl && (
-          <RefinedImage src={settings.refinedImageUrl} alt="Refined Banner" />
+          <img className={styles.refinedImage} src={settings.refinedImageUrl} alt="Refined Banner" />
         )}
         
         {/* Show banner image if useBannerImage is true */}
         {settings.showTextOnBackground !== false && settings.useBannerImage && (
           <div
+            className={styles.bannerImageContainer}
             style={{
               position: settings.refinedImageUrl ? 'absolute' : 'relative',
-              zIndex: 20,
-              transform: `scale(${settings.bannerImageScale / 100}) translate(${settings.bannerImageOffsetX}%, ${settings.bannerImageOffsetY}%)`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%',
-              height: '100%'
+              transform: `scale(${settings.bannerImageScale / 100}) translate(${settings.bannerImageOffsetX}%, ${settings.bannerImageOffsetY}%)`
             }}
           >
             <img 
+              className={styles.bannerImage}
               src={settings.bannerImage}
               alt="Banner Title"
-              style={{
-                maxWidth: '80%',
-                maxHeight: '80%',
-                objectFit: 'contain'
-              }}
             />
             
             {/* Show subtitle with banner image if enabled */}
             {settings.subtitleVisible && settings.subtitle && (
-              <div style={{
-                fontSize: `${settings.subtitleFontSize}px`,
-                fontFamily: settings.fontFamily || "'KHongo', sans-serif",
-                color: settings.fontColor || '#000000',
-                position: 'absolute',
-                bottom: '10%',
-                right: '10%',
-                transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
-                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
-              }}>
+              <div 
+                className={styles.subtitle}
+                style={{
+                  fontSize: `${settings.subtitleFontSize}px`,
+                  fontFamily: settings.fontFamily || "'KHongo', sans-serif",
+                  color: settings.fontColor || '#000000',
+                  transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
+                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
+                }}
+              >
                 {settings.subtitle}
               </div>
             )}
@@ -270,67 +112,84 @@ function BannerPreview({ settings, bannerRef }) {
         
         {/* Always show text if enabled and useBannerImage is false */}
         {settings.showTextOnBackground !== false && !settings.useBannerImage && (
-          <BannerText
+          <div
             ref={bannerRef}
-            className="banner-text" // Add class name for AIRefiner to identify
-            $fontFamily={settings.fontFamily}
-            $fontSize={settings.fontSize}
-            $fontColor={settings.fontColor}
-            $shape={settings.shape && !settings.refinedImageUrl ? settings.shape : 'none'} // Only use shape if no refined image
-            $shapeColor={settings.shapeColor}
-            $shapeImage={settings.shapeImage}
-            $shapeSize={settings.shapeSize}
-            $bannerScale={settings.bannerScale}
-            $bannerOffsetX={settings.bannerOffsetX}
-            $bannerOffsetY={settings.bannerOffsetY}
+            className={`${styles.bannerText} banner-text`}
             style={{ 
-              zIndex: 20, // Ensure text is above the refined image
-              position: settings.refinedImageUrl ? 'absolute' : 'relative'
+              fontFamily: settings.fontFamily,
+              fontSize: `${settings.fontSize}px`,
+              color: settings.fontColor,
+              zIndex: 20,
+              position: settings.refinedImageUrl ? 'absolute' : 'relative',
+              ...(settings.shape === 'circle' && !settings.refinedImageUrl && {
+                borderRadius: '50%',
+                width: `${settings.shapeSize || 80}%`,
+                height: `${settings.shapeSize || 80}%`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }),
+              ...(settings.shape === 'square' && !settings.refinedImageUrl && {
+                width: `${settings.shapeSize || 80}%`,
+                height: `${settings.shapeSize || 80}%`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }),
+              ...(settings.shape === 'rectangle' && !settings.refinedImageUrl && {
+                width: `${settings.shapeSize || 80}%`,
+                height: `${Math.floor((settings.shapeSize || 80) * 0.6)}%`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }),
+              ...(settings.shapeImage && !settings.refinedImageUrl && {
+                backgroundImage: `url(${settings.shapeImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }),
+              ...(settings.shape !== 'none' && !settings.shapeImage && !settings.refinedImageUrl && {
+                backgroundColor: settings.shapeColor
+              })
             }}
           >
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              padding: 0,
-              margin: 0
-            }}>
-              <div style={{ 
-                padding: 0, 
-                margin: '0.75rem 0 0 0', // Add top margin to the title
-                lineHeight: 1.1, // Reduce line height to tighten spacing
-                textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none', // Add shadow for better visibility on images
-                transform: `scale(${(settings.bannerScale || 100) / 100}) 
-                           translate(${settings.bannerOffsetX || 0}%, ${settings.bannerOffsetY || -20}%)`
-              }}>
+            <div className={styles.textContainer}>
+              <div 
+                className={styles.mainText}
+                style={{ 
+                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none',
+                  transform: `scale(${(settings.bannerScale || 100) / 100}) translate(${settings.bannerOffsetX || 0}%, ${settings.bannerOffsetY || -20}%)`
+                }}
+              >
                 {settings.text}
               </div>
               
               {settings.subtitleVisible && settings.subtitle && (
-                <div style={{
-                  fontSize: `${settings.subtitleFontSize}px`,
-                  padding: 0,
-                  lineHeight: 1.1, // Reduce line height to tighten spacing
-                  position: 'absolute',
-                  bottom: '10%',
-                  right: '10%',
-                  transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
-                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none' // Add shadow for better visibility on images
-                }}>
+                <div 
+                  className={styles.subtitleText}
+                  style={{
+                    fontSize: `${settings.subtitleFontSize}px`,
+                    transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
+                    textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
+                  }}
+                >
                   {settings.subtitle}
                 </div>
               )}
             </div>
-          </BannerText>
+          </div>
         )}
-      </PreviewArea>
+      </div>
       
-      <ButtonContainer>
-        <DownloadButton onClick={handleDownload}>
+      <div className={styles.buttonContainer}>
+        <button className={styles.downloadButton} onClick={handleDownload}>
           Download Banner
-        </DownloadButton>
-        <DownloadButton 
+        </button>
+        <button 
+          className={`${styles.downloadButton} ${styles.debugButton}`}
           onClick={() => {
             console.log('Current settings:', settings);
             console.log('Refined Image URL:', settings.refinedImageUrl);
@@ -368,12 +227,11 @@ function BannerPreview({ settings, bannerRef }) {
               alert('No refined image URL available');
             }
           }}
-          style={{ backgroundColor: '#2196F3' }}
         >
           Debug Image
-        </DownloadButton>
-      </ButtonContainer>
-    </PreviewContainer>
+        </button>
+      </div>
+    </div>
   );
 }
 

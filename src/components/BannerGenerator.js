@@ -1,160 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-
-const GeneratorContainer = styled.div`
-  background-color: #f5f5f5;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-    margin: 0;
-    border-radius: 4px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.5rem;
-  }
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 1rem;
-`;
-
-const FormSection = styled.div`
-  margin-bottom: 0.75rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.25rem;
-  width: 100%;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  padding: 0.5rem 0;
-  
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
-const SectionTitle = styled.div`
-  margin-top: 0;
-  margin-bottom: 0;
-  color: #333;
-  
-  &.h2 {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-  
-  &.h3 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-left: 0.5rem;
-  }
-  
-  &.h4 {
-    font-size: 1.1rem;
-    font-weight: normal;
-    margin-left: 1rem;
-  }
-  
-  &.h5 {
-    font-size: 1rem;
-    font-weight: normal;
-    margin-left: 1.5rem;
-    font-style: italic;
-  }
-`;
-
-const SectionContent = styled.div`
-  display: ${props => props.$isExpanded ? 'block' : 'none'};
-  margin-top: 0.5rem;
-  padding-bottom: 1rem;
-`;
-
-const ChevronIcon = styled.span`
-  font-size: 1rem;
-  color: #666;
-`;
-
-const BackgroundPreviewContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const BackgroundPreview = styled.div`
-  width: 100%;
-  aspect-ratio: 1;
-  background-image: ${props => props.src ? `url(${props.src})` : 'none'};
-  background-size: cover;
-  background-position: center;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 2px solid ${props => props.selected ? '#4CAF50' : 'transparent'};
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    opacity: 0.9;
-    transform: scale(1.05);
-    transition: all 0.2s ease;
-  }
-`;
-
-const SliderContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const SliderValue = styled.span`
-  min-width: 40px;
-  text-align: right;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
-
-const ColorInput = styled.input`
-  width: 100%;
-  height: 40px;
-  cursor: pointer;
-`;
+import styles from '../styles/BannerGenerator.module.css';
 
 function BannerGenerator({ settings, onSettingsChange }) {
   const [imageOptions, setImageOptions] = useState([]);
@@ -200,49 +46,53 @@ function BannerGenerator({ settings, onSettingsChange }) {
   };
 
   return (
-    <GeneratorContainer>
+    <div className={styles.generatorContainer}>
       <h2>Banner Settings</h2>
       
       {/* 1. Background */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('background')}>
-          <SectionTitle>Background</SectionTitle>
-          <ChevronIcon>
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('background')}>
+          <div className={styles.sectionTitle}>Background</div>
+          <span className={styles.chevronIcon}>
             {expandedSections.background ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
+          </span>
+        </div>
         
-        <SectionContent $isExpanded={expandedSections.background}>
-          <FormGroup>
-            <Label htmlFor="backgroundColor">Background Color</Label>
-            <ColorInput
+        <div className={expandedSections.background ? styles.sectionContent : styles.sectionContentHidden}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="backgroundColor">Background Color</label>
+            <input
+              className={styles.colorInput}
               type="color"
               id="backgroundColor"
               name="backgroundColor"
               value={settings.backgroundColor}
               onChange={handleChange}
             />
-          </FormGroup>
+          </div>
           
-          <FormGroup>
-            <Label>Background Image</Label>
-            <BackgroundPreviewContainer>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Background Image</label>
+            <div className={styles.backgroundPreviewContainer}>
               {imageOptions.map((image, index) => (
-                <BackgroundPreview 
+                <div 
                   key={index}
-                  src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
-                  selected={settings.backgroundImage === image.path}
+                  className={`${styles.backgroundPreview} ${settings.backgroundImage === image.path ? styles.backgroundPreviewSelected : ''}`}
+                  style={{
+                    backgroundImage: image.path ? `url(${image.path})` : 'url(data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>)'
+                  }}
                   onClick={() => handleBackgroundSelect(image.path)}
                   title={image.name}
                 />
               ))}
-            </BackgroundPreviewContainer>
-          </FormGroup>
+            </div>
+          </div>
           
-          <FormGroup>
-            <Label htmlFor="backgroundSize">Background Size (Crop)</Label>
-            <SliderContainer>
-              <Input
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="backgroundSize">Background Size (Crop)</label>
+            <div className={styles.sliderContainer}>
+              <input
+                className={styles.input}
                 type="range"
                 id="backgroundSize"
                 name="backgroundSize"
@@ -254,13 +104,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   onSettingsChange({ backgroundSize: value });
                 }}
               />
-              <SliderValue>{settings.backgroundSize || 100}%</SliderValue>
-            </SliderContainer>
-          </FormGroup>
+              <span className={styles.sliderValue}>{settings.backgroundSize || 100}%</span>
+            </div>
+          </div>
           
-          <FormGroup>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
               <input
+                className={styles.checkbox}
                 type="checkbox"
                 id="showTextOnBackground"
                 name="showTextOnBackground"
@@ -268,18 +119,18 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 onChange={(e) => {
                   onSettingsChange({ showTextOnBackground: e.target.checked });
                 }}
-                style={{ marginRight: '0.5rem' }}
               />
-              <Label htmlFor="showTextOnBackground">Show Text on Background</Label>
+              <label className={styles.checkboxLabel} htmlFor="showTextOnBackground">Show Text on Background</label>
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem' }}>
+            <div className={styles.checkboxDescription}>
               Uncheck to create a background without text, then add text later
             </div>
-          </FormGroup>
+          </div>
           
-          <FormGroup>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
               <input
+                className={styles.checkbox}
                 type="checkbox"
                 id="customBackgroundDimensions"
                 name="customBackgroundDimensions"
@@ -295,22 +146,22 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     onSettingsChange({ customBackgroundDimensions: e.target.checked });
                   }
                 }}
-                style={{ marginRight: '0.5rem' }}
               />
-              <Label htmlFor="customBackgroundDimensions">Custom Background Dimensions</Label>
+              <label className={styles.checkboxLabel} htmlFor="customBackgroundDimensions">Custom Background Dimensions</label>
             </div>
             
             {settings.customBackgroundDimensions && (
-              <div style={{ marginTop: '0.5rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
+              <div className={styles.customDimensionsContainer}>
+                <div className={styles.dimensionControl}>
                   <label 
-                    htmlFor="backgroundWidth" 
-                    style={{ display: 'block', marginBottom: '0.5rem' }}
+                    className={styles.dimensionLabel}
+                    htmlFor="backgroundWidth"
                   >
                     Width (px): {settings.backgroundWidth || 400}
                   </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className={styles.dimensionSliderContainer}>
                     <input
+                      className={styles.input}
                       type="range"
                       id="backgroundWidth"
                       name="backgroundWidth"
@@ -321,19 +172,19 @@ function BannerGenerator({ settings, onSettingsChange }) {
                         const value = parseInt(e.target.value, 10);
                         onSettingsChange({ backgroundWidth: value });
                       }}
-                      style={{ width: '100%' }}
                     />
                   </div>
                 </div>
-                <div style={{ marginBottom: '1rem' }}>
+                <div className={styles.dimensionControl}>
                   <label 
-                    htmlFor="backgroundHeight" 
-                    style={{ display: 'block', marginBottom: '0.5rem' }}
+                    className={styles.dimensionLabel}
+                    htmlFor="backgroundHeight"
                   >
                     Height (px): {settings.backgroundHeight || 400}
                   </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className={styles.dimensionSliderContainer}>
                     <input
+                      className={styles.input}
                       type="range"
                       id="backgroundHeight"
                       name="backgroundHeight"
@@ -344,28 +195,28 @@ function BannerGenerator({ settings, onSettingsChange }) {
                         const value = parseInt(e.target.value, 10);
                         onSettingsChange({ backgroundHeight: value });
                       }}
-                      style={{ width: '100%' }}
                     />
                   </div>
                 </div>
               </div>
             )}
-          </FormGroup>
-        </SectionContent>
-      </FormSection>
+          </div>
+        </div>
+      </div>
 
       {/* 2. Banner Title */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('text')}>
-          <SectionTitle>Banner Title</SectionTitle>
-          <ChevronIcon>
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('text')}>
+          <div className={styles.sectionTitle}>Banner Title</div>
+          <span className={styles.chevronIcon}>
             {expandedSections.text ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.text}>
-          <FormGroup>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+          </span>
+        </div>
+        <div className={expandedSections.text ? styles.sectionContent : styles.sectionContentHidden}>
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
               <input
+                className={styles.checkbox}
                 type="checkbox"
                 id="useBannerImage"
                 name="useBannerImage"
@@ -373,33 +224,34 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 onChange={(e) => {
                   onSettingsChange({ useBannerImage: e.target.checked });
                 }}
-                style={{ marginRight: '0.5rem' }}
               />
-              <Label htmlFor="useBannerImage">Use Banner Image Instead of Text</Label>
+              <label className={styles.checkboxLabel} htmlFor="useBannerImage">Use Banner Image Instead of Text</label>
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1.5rem', marginBottom: '1rem' }}>
+            <div className={styles.checkboxDescription}>
               Check to use a banner image instead of text
             </div>
-          </FormGroup>
+          </div>
           
           {/* Banner Text - only shown when not using banner image */}
           {!settings.useBannerImage && (
-            <FormGroup>
-              <Label htmlFor="text">Banner Text</Label>
-              <Input
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="text">Banner Text</label>
+              <input
+                className={styles.input}
                 type="text"
                 id="text"
                 name="text"
                 value={settings.text}
                 onChange={handleChange}
               />
-            </FormGroup>
+            </div>
           )}
           
           {/* Subtitle - always shown, regardless of banner image setting */}
-          <FormGroup>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
               <input
+                className={styles.checkbox}
                 type="checkbox"
                 id="subtitleVisible"
                 name="subtitleVisible"
@@ -407,15 +259,15 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 onChange={(e) => {
                   onSettingsChange({ subtitleVisible: e.target.checked });
                 }}
-                style={{ marginRight: '0.5rem' }}
               />
-              <Label htmlFor="subtitleVisible">Show Subtitle</Label>
+              <label className={styles.checkboxLabel} htmlFor="subtitleVisible">Show Subtitle</label>
             </div>
             
             {settings.subtitleVisible && (
               <>
-                <Label htmlFor="subtitle">Subtitle Text (e.g., 第n回)</Label>
-                <Input
+                <label className={styles.label} htmlFor="subtitle">Subtitle Text (e.g., 第n回)</label>
+                <input
+                  className={styles.input}
                   type="text"
                   id="subtitle"
                   name="subtitle"
@@ -424,9 +276,10 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   placeholder="第1回"
                 />
                 
-                <Label htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</Label>
-                <SliderContainer>
-                  <Input
+                <label className={styles.label} htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
                     type="range"
                     id="subtitleFontSize"
                     name="subtitleFontSize"
@@ -435,12 +288,13 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     value={settings.subtitleFontSize}
                     onChange={handleChange}
                   />
-                  <SliderValue>{settings.subtitleFontSize}px</SliderValue>
-                </SliderContainer>
+                  <span className={styles.sliderValue}>{settings.subtitleFontSize}px</span>
+                </div>
                 
-                <Label htmlFor="subtitleOffsetX" style={{ marginTop: '0.5rem' }}>Subtitle Horizontal Position</Label>
-                <SliderContainer>
-                  <Input
+                <label className={styles.label} htmlFor="subtitleOffsetX" style={{ marginTop: '0.5rem' }}>Subtitle Horizontal Position</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
                     type="range"
                     id="subtitleOffsetX"
                     name="subtitleOffsetX"
@@ -449,12 +303,13 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     value={settings.subtitleOffsetX || 0}
                     onChange={handleChange}
                   />
-                  <SliderValue>{settings.subtitleOffsetX || 0}</SliderValue>
-                </SliderContainer>
+                  <span className={styles.sliderValue}>{settings.subtitleOffsetX || 0}</span>
+                </div>
                 
-                <Label htmlFor="subtitleOffsetY" style={{ marginTop: '0.5rem' }}>Subtitle Vertical Position</Label>
-                <SliderContainer>
-                  <Input
+                <label className={styles.label} htmlFor="subtitleOffsetY" style={{ marginTop: '0.5rem' }}>Subtitle Vertical Position</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
                     type="range"
                     id="subtitleOffsetY"
                     name="subtitleOffsetY"
@@ -463,18 +318,19 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     value={settings.subtitleOffsetY || 0}
                     onChange={handleChange}
                   />
-                  <SliderValue>{settings.subtitleOffsetY || 0}</SliderValue>
-                </SliderContainer>
+                  <span className={styles.sliderValue}>{settings.subtitleOffsetY || 0}</span>
+                </div>
               </>
             )}
-          </FormGroup>
+          </div>
           
           {/* Font settings - only shown when not using banner image */}
           {!settings.useBannerImage && (
             <>
-              <FormGroup>
-                <Label htmlFor="fontFamily">Font Family</Label>
-                <Select
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="fontFamily">Font Family</label>
+                <select
+                  className={styles.select}
                   id="fontFamily"
                   name="fontFamily"
                   value={settings.fontFamily || "'KHongo', sans-serif"}
@@ -529,13 +385,14 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
                     <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
                   </optgroup>
-                </Select>
-              </FormGroup>
+                </select>
+              </div>
               
-              <FormGroup>
-                <Label htmlFor="fontSize">Font Size</Label>
-                <SliderContainer>
-                  <Input
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="fontSize">Font Size</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
                     type="range"
                     id="fontSize"
                     name="fontSize"
@@ -544,38 +401,40 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     value={settings.fontSize}
                     onChange={handleChange}
                   />
-                  <SliderValue>{settings.fontSize}px</SliderValue>
-                </SliderContainer>
-              </FormGroup>
+                  <span className={styles.sliderValue}>{settings.fontSize}px</span>
+                </div>
+              </div>
               
-              <FormGroup>
-                <Label htmlFor="fontColor">Font Color</Label>
-                <ColorInput
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="fontColor">Font Color</label>
+                <input
+                  className={styles.colorInput}
                   type="color"
                   id="fontColor"
                   name="fontColor"
                   value={settings.fontColor}
                   onChange={handleChange}
                 />
-              </FormGroup>
+              </div>
             </>
           )}
-        </SectionContent>
-      </FormSection>
+        </div>
+      </div>
 
       {/* 3. Banner Title Position & Size */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('position')}>
-          <SectionTitle>Banner Title Position & Size</SectionTitle>
-          <ChevronIcon>
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('position')}>
+          <div className={styles.sectionTitle}>Banner Title Position & Size</div>
+          <span className={styles.chevronIcon}>
             {expandedSections.position ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.position}>
-          <FormGroup>
-            <Label htmlFor="bannerScale">Banner Scale</Label>
-            <SliderContainer>
-              <Input
+          </span>
+        </div>
+        <div className={expandedSections.position ? styles.sectionContent : styles.sectionContentHidden}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="bannerScale">Banner Scale</label>
+            <div className={styles.sliderContainer}>
+              <input
+                className={styles.input}
                 type="range"
                 id="bannerScale"
                 name="bannerScale"
@@ -591,14 +450,15 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   });
                 }}
               />
-              <SliderValue>{settings.bannerScale || 100}%</SliderValue>
-            </SliderContainer>
-          </FormGroup>
+              <span className={styles.sliderValue}>{settings.bannerScale || 100}%</span>
+            </div>
+          </div>
         
-          <FormGroup>
-            <Label htmlFor="bannerOffsetX">Horizontal Position</Label>
-            <SliderContainer>
-              <Input
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="bannerOffsetX">Horizontal Position</label>
+            <div className={styles.sliderContainer}>
+              <input
+                className={styles.input}
                 type="range"
                 id="bannerOffsetX"
                 name="bannerOffsetX"
@@ -614,14 +474,15 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   });
                 }}
               />
-              <SliderValue>{settings.bannerOffsetX || 0}</SliderValue>
-            </SliderContainer>
-          </FormGroup>
+              <span className={styles.sliderValue}>{settings.bannerOffsetX || 0}</span>
+            </div>
+          </div>
           
-          <FormGroup>
-            <Label htmlFor="bannerOffsetY">Vertical Position</Label>
-            <SliderContainer>
-              <Input
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="bannerOffsetY">Vertical Position</label>
+            <div className={styles.sliderContainer}>
+              <input
+                className={styles.input}
                 type="range"
                 id="bannerOffsetY"
                 name="bannerOffsetY"
@@ -637,25 +498,26 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   });
                 }}
               />
-              <SliderValue>{settings.bannerOffsetY || 0}</SliderValue>
-            </SliderContainer>
-          </FormGroup>
-        </SectionContent>
-      </FormSection>
+              <span className={styles.sliderValue}>{settings.bannerOffsetY || 0}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
       {/* 4. Banner Title Background Shape */}
-      <FormSection>
-        <SectionHeader onClick={() => toggleSection('shape')}>
-          <SectionTitle>Banner Title Background Shape</SectionTitle>
-          <ChevronIcon>
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('shape')}>
+          <div className={styles.sectionTitle}>Banner Title Background Shape</div>
+          <span className={styles.chevronIcon}>
             {expandedSections.shape ? <FaChevronUp /> : <FaChevronDown />}
-          </ChevronIcon>
-        </SectionHeader>
-        <SectionContent $isExpanded={expandedSections.shape}>
-          <FormGroup>
-            <Label htmlFor="shape">Background Shape</Label>
-            <Select
+          </span>
+        </div>
+        <div className={expandedSections.shape ? styles.sectionContent : styles.sectionContentHidden}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="shape">Background Shape</label>
+            <select
+              className={styles.select}
               id="shape"
               name="shape"
               value={settings.shape}
@@ -665,39 +527,43 @@ function BannerGenerator({ settings, onSettingsChange }) {
               <option value="circle">Circle</option>
               <option value="square">Square</option>
               <option value="rectangle">Rectangle</option>
-            </Select>
-          </FormGroup>
+            </select>
+          </div>
           
-          <FormGroup>
-            <Label>Shape Image</Label>
-            <BackgroundPreviewContainer>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Shape Image</label>
+            <div className={styles.backgroundPreviewContainer}>
               {imageOptions.map((image, index) => (
-                <BackgroundPreview 
+                <div 
                   key={index}
-                  src={image.path || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>'}
-                  selected={settings.shapeImage === image.path}
+                  className={`${styles.backgroundPreview} ${settings.shapeImage === image.path ? styles.backgroundPreviewSelected : ''}`}
+                  style={{
+                    backgroundImage: image.path ? `url(${image.path})` : 'url(data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>)'
+                  }}
                   onClick={() => handleShapeImageSelect(image.path)}
                   title={image.name}
                 />
               ))}
-            </BackgroundPreviewContainer>
-          </FormGroup>
+            </div>
+          </div>
           
-          <FormGroup>
-            <Label htmlFor="shapeColor">Shape Color (when no image)</Label>
-            <ColorInput
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="shapeColor">Shape Color (when no image)</label>
+            <input
+              className={styles.colorInput}
               type="color"
               id="shapeColor"
               name="shapeColor"
               value={settings.shapeColor}
               onChange={handleChange}
             />
-          </FormGroup>
+          </div>
           
-          <FormGroup>
-            <Label htmlFor="shapeSize">Shape Size</Label>
-            <SliderContainer>
-              <Input
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="shapeSize">Shape Size</label>
+            <div className={styles.sliderContainer}>
+              <input
+                className={styles.input}
                 type="range"
                 id="shapeSize"
                 name="shapeSize"
@@ -706,12 +572,12 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 value={settings.shapeSize || 80}
                 onChange={handleChange}
               />
-              <SliderValue>{settings.shapeSize || 80}%</SliderValue>
-            </SliderContainer>
-          </FormGroup>
-        </SectionContent>
-      </FormSection>
-    </GeneratorContainer>
+              <span className={styles.sliderValue}>{settings.shapeSize || 80}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
