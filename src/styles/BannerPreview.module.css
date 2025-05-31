@@ -9,6 +9,8 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
   box-sizing: border-box;
 }
 
@@ -26,7 +28,7 @@
   border: 1px solid #ddd;
   position: relative;
   overflow: hidden;
-  max-width: 600px !important;
+  max-width: calc(100% - 2rem);
   margin: 0 auto 0.5rem;
 }
 
@@ -99,7 +101,8 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 0.25rem;
-  width: 100%;
+  width: calc(100% - 2rem);
+  max-width: 600px;
   justify-content: center;
 }
 
@@ -133,8 +136,12 @@
 
 /* Media Queries */
 @media (min-width: 1200px) {
-  .previewArea {
-    max-width: 800px !important;
+  .previewContainer {
+    max-width: 900px;
+  }
+  
+  .buttonContainer {
+    max-width: 700px;
   }
 }
 
@@ -142,41 +149,92 @@
   .previewContainer {
     padding: 0.75rem;
     border-radius: 4px;
+    width: 90%;
+    max-width: 90%;
   }
   
   .previewArea {
-    max-width: 100% !important;
-    width: 100% !important;
+    max-width: 90%;
+  }
+  
+  .buttonContainer {
+    width: 90%;
   }
 }
 
 @media (max-width: 576px) {
-  .previewArea {
-    max-width: 90% !important;
-    width: 90% !important;
+  .previewContainer {
+    padding: 0.5rem;
+    width: 85%;
+    max-width: 85%;
   }
-}
-
-@media (max-width: 480px) {
+  
   .previewArea {
-    max-width: 85% !important;
-    width: 85% !important;
+    max-width: 85%;
+  }
+  
+  .buttonContainer {
+    width: 85%;
   }
 }
 
 @media (max-width: 480px) {
   .previewContainer {
     padding: 0.5rem;
+    width: 80%;
+    max-width: 80%;
+  }
+  
+  .previewArea {
+    max-width: 80%;
   }
   
   .buttonContainer {
     flex-direction: column;
     gap: 0.5rem;
+    width: 80%;
   }
   
   .downloadButton {
     width: 100%;
     margin-right: 0;
     padding: 0.75rem 0;
+  }
+}
+
+@media (max-width: 375px) {
+  .previewContainer {
+    padding: 0.4rem;
+    width: 75%;
+    max-width: 75%;
+  }
+  
+  .previewArea {
+    max-width: 75%;
+  }
+  
+  .buttonContainer {
+    width: 75%;
+  }
+}
+
+@media (max-width: 320px) {
+  .previewContainer {
+    padding: 0.3rem;
+    width: 70%;
+    max-width: 70%;
+  }
+  
+  .previewArea {
+    max-width: 70%;
+  }
+  
+  .buttonContainer {
+    width: 70%;
+  }
+  
+  .downloadButton {
+    padding: 0.6rem 0;
+    font-size: 0.9rem;
   }
 }
