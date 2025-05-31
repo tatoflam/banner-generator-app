@@ -1,14 +1,17 @@
 {
   "files": {
-    "main.js": "/banner-generator-app/static/js/main.fbc20915.js",
+    "main.css": "/banner-generator-app/static/css/main.c5dcd8e0.css",
+    "main.js": "/banner-generator-app/static/js/main.a1493f31.js",
     "static/js/239.5e2a88dc.chunk.js": "/banner-generator-app/static/js/239.5e2a88dc.chunk.js",
     "static/js/316.da5190eb.chunk.js": "/banner-generator-app/static/js/316.da5190eb.chunk.js",
     "index.html": "/banner-generator-app/index.html",
-    "main.fbc20915.js.map": "/banner-generator-app/static/js/main.fbc20915.js.map",
+    "main.c5dcd8e0.css.map": "/banner-generator-app/static/css/main.c5dcd8e0.css.map",
+    "main.a1493f31.js.map": "/banner-generator-app/static/js/main.a1493f31.js.map",
     "239.5e2a88dc.chunk.js.map": "/banner-generator-app/static/js/239.5e2a88dc.chunk.js.map",
     "316.da5190eb.chunk.js.map": "/banner-generator-app/static/js/316.da5190eb.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.fbc20915.js"
+    "static/css/main.c5dcd8e0.css",
+    "static/js/main.a1493f31.js"
   ]
 }
