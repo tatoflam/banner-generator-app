@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const PreviewContainer = styled.div`
   background-color: #f5f5f5;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -15,6 +15,7 @@ const PreviewContainer = styled.div`
   
   @media (max-width: 768px) {
     padding: 0.75rem;
+    border-radius: 4px;
   }
   
   @media (max-width: 480px) {
@@ -131,7 +132,7 @@ const DownloadButton = styled.button`
 
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: 1rem;
   width: 100%;
   justify-content: center;

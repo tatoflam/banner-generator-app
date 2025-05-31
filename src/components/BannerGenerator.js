@@ -7,33 +7,11 @@ const GeneratorContainer = styled.div`
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 80vh;
-  max-height: 980px;
-  overflow-y: auto;
-  scrollbar-width: thin;
   width: 100%;
   box-sizing: border-box;
   
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-  
   @media (max-width: 768px) {
     padding: 0.75rem;
-    height: 85vh;
     margin: 0;
     border-radius: 4px;
   }

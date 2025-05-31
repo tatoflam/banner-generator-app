@@ -7,17 +7,17 @@ import AIRefiner from './components/AIRefiner';
 const AppContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   font-family: Arial, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
-    padding: 0.75rem;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 0.5rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
 `;
 
@@ -29,15 +29,15 @@ const Header = styled.header`
 const MainContent = styled.main`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
   
   @media (max-width: 480px) {
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 `;
 

@@ -3,20 +3,22 @@ import styled from 'styled-components';
 
 const RefinerContainer = styled.div`
   background-color: #f5f5f5;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 2rem;
+  margin-top: 1rem;
   width: 100%;
   box-sizing: border-box;
   
   @media (max-width: 768px) {
     padding: 0.75rem;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
+    border-radius: 4px;
   }
   
   @media (max-width: 480px) {
     padding: 0.5rem;
+    margin-top: 0.5rem;
   }
 `;
 
