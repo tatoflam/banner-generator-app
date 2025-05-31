@@ -27,12 +27,11 @@ const Header = styled.header`
 `;
 
 const MainContent = styled.main`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
   
@@ -41,9 +40,21 @@ const MainContent = styled.main`
   }
 `;
 
-const LeftColumn = styled.div`
+const Row = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
+`;
+
+const TwoColumnRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
 `;
 
 function App() {
@@ -96,21 +107,23 @@ function App() {
         <p>Create your custom banner in seconds</p>
       </Header>
       <MainContent>
-        <LeftColumn>
+        <Row>
           <BannerPreview 
             settings={bannerSettings} 
             bannerRef={bannerRef}
+          />
+        </Row>
+        <TwoColumnRow>
+          <BannerGenerator 
+            settings={bannerSettings} 
+            onSettingsChange={handleSettingsChange} 
           />
           <AIRefiner 
             bannerRef={bannerRef} 
             onRefinementComplete={handleRefinementComplete} 
             settings={bannerSettings}
           />
-        </LeftColumn>
-        <BannerGenerator 
-          settings={bannerSettings} 
-          onSettingsChange={handleSettingsChange} 
-        />
+        </TwoColumnRow>
       </MainContent>
     </AppContainer>
   );
