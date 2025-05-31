@@ -1,7 +1,7 @@
 /* App.module.css */
 
 .app {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
@@ -32,6 +32,8 @@
 
 .previewSection {
   grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
 }
 
 .controlsSection {
@@ -47,6 +49,12 @@
 }
 
 /* Media Queries */
+@media (min-width: 1600px) {
+  .app {
+    max-width: 1600px;
+  }
+}
+
 @media (max-width: 992px) {
   .app {
     padding: 1.5rem;

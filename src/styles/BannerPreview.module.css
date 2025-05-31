@@ -26,7 +26,7 @@
   border: 1px solid #ddd;
   position: relative;
   overflow: hidden;
-  max-width: 100%;
+  max-width: 600px !important;
   margin: 0 auto 0.75rem;
 }
 
@@ -132,10 +132,20 @@
 }
 
 /* Media Queries */
+@media (min-width: 1200px) {
+  .previewArea {
+    max-width: 800px !important;
+  }
+}
+
 @media (max-width: 768px) {
   .previewContainer {
     padding: 0.75rem;
     border-radius: 4px;
+  }
+  
+  .previewArea {
+    max-width: 100%;
   }
 }
 

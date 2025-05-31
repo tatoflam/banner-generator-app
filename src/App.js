@@ -22,7 +22,7 @@ function App() {
     shapeSize: 80,
     backgroundImage: `${process.env.PUBLIC_URL}/assets/image/bg/nogawa.png`,
     backgroundSize: 100,
-    customBackgroundDimensions: true,
+    customBackgroundDimensions: false,
     backgroundWidth: 360,
     backgroundHeight: 120,
     bannerScale: 100,
