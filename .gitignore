@@ -1,3 +1,6 @@
 node_modules
 build
 .env
+public/assets/image/bg/ignore*
+public/assets/image/title/ignore*
+

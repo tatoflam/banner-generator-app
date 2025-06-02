@@ -58,7 +58,7 @@ function AIRefiner({ bannerRef, onRefinementComplete, settings }) {
   const defaultApiKey = process.env.REACT_APP_STABILITY_API_KEY || '';
   const [apiKey, setApiKey] = useState(defaultApiKey);
   const [apiKeyError, setApiKeyError] = useState(false);
-  const [userPrompt, setUserPrompt] = useState('Make the river attractive with extraordinary big fish, frogs, Dinosaur, Japanese children from 6 to 9 years old putting on purple T-shirt. Transform this image into an abstract art style. Use bold colors, geometric shapes, and artistic patterns while maintaining the overall theme. Make it visually striking and modern. Keep the text readable but integrate it artistically into the design.');
+  const [userPrompt, setUserPrompt] = useState('From the original background image, make the river attractive with extraordinary big fish, whales, frogs, dinosaurs, Japanese girls and boys from 6 to 9 years old putting on purple T-shirt. Transform this image into an abstract art style. Use bold colors, geometric shapes, and artistic patterns while maintaining the overall theme. Make it visually striking and modern. Keep the text readable but integrate it artistically into the design.');
   const [negativePrompt, setNegativePrompt] = useState('Do not draw totally different character, maintain the original text and theme, avoid blurry or distorted text, no watermarks, no signatures. If there is no text in the image, do not include any text in generated image.');
   const [stylePreset, setStylePreset] = useState('line-art');
   const [strength, setStrength] = useState(39);

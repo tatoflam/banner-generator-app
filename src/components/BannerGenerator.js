@@ -17,19 +17,99 @@ function BannerGenerator({ settings, onSettingsChange }) {
       [section]: !prev[section]
     }));
   };
+
+  // Known image files that exist in the directory
+  const knownFiles = [
+    'spring.png',
+    'summer.png',
+    'autumn.png',
+    'winter.png',
+    'nogawa.png',
+    'ignore_2025koryukai.png'
+  ];
   
   useEffect(() => {
-    // Load images from public/assets with PUBLIC_URL prefix for GitHub Pages compatibility
-    const images = [
-      { name: 'None', path: null },
-      { name: 'Spring', path: `${process.env.PUBLIC_URL}/assets/image/bg/spring.png` },
-      { name: 'Summer', path: `${process.env.PUBLIC_URL}/assets/image/bg/summer.png` },
-      { name: 'Autumn', path: `${process.env.PUBLIC_URL}/assets/image/bg/autumn.png` },
-      { name: 'Winter', path: `${process.env.PUBLIC_URL}/assets/image/bg/winter.png` },
-      { name: 'Nogawa', path: `${process.env.PUBLIC_URL}/assets/image/bg/nogawa.png` }
-    ];
+    // Start with 'None' option
+    const images = [{ name: 'None', path: null }];
     
-    setImageOptions(images);
+    // Function to format the display name from a filename
+    const formatDisplayName = (filename) => {
+      // Remove file extension
+      let name = filename.replace(/\.[^/.]+$/, '');
+            
+      // Replace hyphens and underscores with spaces
+      name = name.replace(/[-_]/g, ' ');
+      
+      // Capitalize each word
+      return name.split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+
+    // Dynamically fetch and process background images
+    const fetchBackgroundImages = async () => {
+      try {
+        // The directory path where background images are stored
+        const bgDirPath = `${process.env.PUBLIC_URL}/assets/image/bg`;
+        
+        // Try to fetch the directory to see what files are available
+        const response = await fetch(bgDirPath);
+        
+        // If we can't access the directory directly, use a fallback approach
+        if (!response.ok) {
+          // Process each known file
+          const imagePromises = knownFiles.map(async (filename) => {
+            try {
+              // Check if the file exists by trying to fetch it
+              const fileResponse = await fetch(`${bgDirPath}/${filename}`);
+              if (fileResponse.ok) {
+                return {
+                  name: formatDisplayName(filename),
+                  path: `${bgDirPath}/${filename}`
+                };
+              }
+              return null;
+            } catch (error) {
+              console.warn(`Failed to check file ${filename}:`, error);
+              return null;
+            }
+          });
+          
+          // Wait for all file checks to complete
+          const validImages = (await Promise.all(imagePromises))
+            .filter(img => img !== null);
+          
+          // Update state with the valid images
+          setImageOptions([...images, ...validImages]);
+        } else {
+          // If we can access the directory (unlikely in browser), parse the response
+          // This would require server-side support or a directory listing
+          console.warn('Directory listing not supported in browser. Using fallback method.');
+          
+          const fallbackImages = knownFiles.map(filename => ({
+            name: formatDisplayName(filename),
+            path: `${bgDirPath}/${filename}`
+          }));
+          
+          setImageOptions([...images, ...fallbackImages]);
+        }
+      } catch (error) {
+        console.error('Error fetching background images:', error);
+        
+        // Fallback to known files if there's an error
+        const bgDirPath = `${process.env.PUBLIC_URL}/assets/image/bg`;
+        
+        const fallbackImages = knownFiles.map(filename => ({
+          name: formatDisplayName(filename),
+          path: `${bgDirPath}/${filename}`
+        }));
+        
+        setImageOptions([...images, ...fallbackImages]);
+      }
+    };
+    
+    // Execute the fetch function
+    fetchBackgroundImages();
   }, []);
   
   const handleChange = (e) => {
