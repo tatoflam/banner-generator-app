@@ -80,20 +80,22 @@ function BannerPreview({ settings, bannerRef }) {
         
         {/* Show banner image if useBannerImage is true */}
         {settings.showTextOnBackground !== false && settings.useBannerImage && (
-          <div
-            className={styles.bannerImageContainer}
-            style={{
-              position: settings.refinedImageUrl ? 'absolute' : 'relative',
-              transform: `scale(${settings.bannerImageScale / 100}) translate(${settings.bannerImageOffsetX}%, ${settings.bannerImageOffsetY}%)`
-            }}
-          >
-            <img 
-              className={styles.bannerImage}
-              src={settings.bannerImage}
-              alt="Banner Title"
-            />
+          <>
+            <div
+              className={styles.bannerImageContainer}
+              style={{
+                position: settings.refinedImageUrl ? 'absolute' : 'relative',
+                transform: `scale(${settings.bannerImageScale / 100}) translate(${settings.bannerImageOffsetX}%, ${settings.bannerImageOffsetY}%)`
+              }}
+            >
+              <img 
+                className={styles.bannerImage}
+                src={settings.bannerImage}
+                alt="Banner Title"
+              />
+            </div>
             
-            {/* Show subtitle with banner image if enabled */}
+            {/* Show subtitle with banner image if enabled - now outside the banner image container */}
             {settings.subtitleVisible && settings.subtitle && (
               <div 
                 className={styles.subtitle}
@@ -101,14 +103,15 @@ function BannerPreview({ settings, bannerRef }) {
                   fontSize: `${settings.subtitleFontSize}px`,
                   fontFamily: settings.subtitleFontFamily || settings.fontFamily || "'KHongo', sans-serif",
                   color: settings.subtitleFontColor || settings.fontColor || '#000000',
-                  transform: `scale(${(settings.subtitleScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
+                  position: 'absolute',
+                  transform: `scale(${(settings.subtitleBannerScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
                   textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
                 }}
               >
                 {settings.subtitle}
               </div>
             )}
-          </div>
+          </>
         )}
         
         {/* Always show text if enabled and useBannerImage is false */}
@@ -175,7 +178,7 @@ function BannerPreview({ settings, bannerRef }) {
                     fontSize: `${settings.subtitleFontSize}px`,
                     fontFamily: settings.subtitleFontFamily || settings.fontFamily,
                     color: settings.subtitleFontColor || settings.fontColor,
-                    transform: `scale(${(settings.subtitleScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
+                    transform: `scale(${(settings.subtitleBannerScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
                     textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
                   }}
                 >

@@ -653,7 +653,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   className={styles.select}
                   id="subtitleFontFamily"
                   name="subtitleFontFamily"
-                  value={settings.subtitleFontFamily || settings.fontFamily || "'KHongo', sans-serif"}
+                  value={settings.subtitleFontFamily || "'KHongo', sans-serif"}
                   onChange={handleChange}
                 >
                   {/* Western Fonts */}
@@ -713,7 +713,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   type="color"
                   id="subtitleFontColor"
                   name="subtitleFontColor"
-                  value={settings.subtitleFontColor || settings.fontColor}
+                  value={settings.subtitleFontColor || '#000000'}
                   onChange={handleChange}
                 />
               </>
@@ -734,22 +734,22 @@ function BannerGenerator({ settings, onSettingsChange }) {
           {settings.subtitleVisible && (
             <>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="subtitleScale">Subtitle Scale</label>
+                <label className={styles.label} htmlFor="subtitleBannerScale">Subtitle Banner Scale</label>
                 <div className={styles.sliderContainer}>
                   <input
                     className={styles.input}
                     type="range"
-                    id="subtitleScale"
-                    name="subtitleScale"
+                    id="subtitleBannerScale"
+                    name="subtitleBannerScale"
                     min="50"
                     max="150"
-                    value={settings.subtitleScale || 100}
+                    value={settings.subtitleBannerScale || 100}
                     onChange={(e) => {
                       const value = parseInt(e.target.value, 10);
-                      onSettingsChange({ subtitleScale: value });
+                      onSettingsChange({ subtitleBannerScale: value });
                     }}
                   />
-                  <span className={styles.sliderValue}>{settings.subtitleScale || 100}%</span>
+                  <span className={styles.sliderValue}>{settings.subtitleBannerScale || 100}%</span>
                 </div>
               </div>
 
