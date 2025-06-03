@@ -8,6 +8,7 @@ function BannerGenerator({ settings, onSettingsChange }) {
     background: false,
     position: false,
     text: true,
+    bannerImagePosition: false,
     subtitle: false,
     subtitlePosition: false,
     shape: false
@@ -329,6 +330,26 @@ function BannerGenerator({ settings, onSettingsChange }) {
             </div>
           )}
           
+          {/* Banner Image - only shown when using banner image */}
+          {settings.useBannerImage && (
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Banner Image</label>
+              <div className={styles.backgroundPreviewContainer}>
+                {imageOptions.map((image, index) => (
+                  <div 
+                    key={index}
+                    className={`${styles.backgroundPreview} ${settings.bannerImage === image.path ? styles.backgroundPreviewSelected : ''}`}
+                    style={{
+                      backgroundImage: image.path ? `url(${image.path})` : 'url(data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f5f5f5"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="%23999" text-anchor="middle" dominant-baseline="middle">None</text></svg>)'
+                    }}
+                    onClick={() => onSettingsChange({ bannerImage: image.path })}
+                    title={image.name}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          
           
           {/* Font settings - only shown when not using banner image */}
           {!settings.useBannerImage && (
@@ -449,11 +470,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 value={settings.bannerScale || 100}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
-                  // Update both bannerScale (for text) and bannerImageScale (for image)
-                  onSettingsChange({ 
-                    bannerScale: value,
-                    bannerImageScale: value 
-                  });
+                  // Only update bannerScale for text
+                  onSettingsChange({ bannerScale: value });
                 }}
               />
               <span className={styles.sliderValue}>{settings.bannerScale || 100}%</span>
@@ -473,11 +491,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 value={settings.bannerOffsetX || 0}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
-                  // Update both bannerOffsetX (for text) and bannerImageOffsetX (for image)
-                  onSettingsChange({ 
-                    bannerOffsetX: value,
-                    bannerImageOffsetX: value 
-                  });
+                  // Only update bannerOffsetX for text
+                  onSettingsChange({ bannerOffsetX: value });
                 }}
               />
               <span className={styles.sliderValue}>{settings.bannerOffsetX || 0}</span>
@@ -497,11 +512,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 value={settings.bannerOffsetY || 0}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
-                  // Update both bannerOffsetY (for text) and bannerImageOffsetY (for image)
-                  onSettingsChange({ 
-                    bannerOffsetY: value,
-                    bannerImageOffsetY: value 
-                  });
+                  // Only update bannerOffsetY for text
+                  onSettingsChange({ bannerOffsetY: value });
                 }}
               />
               <span className={styles.sliderValue}>{settings.bannerOffsetY || 0}</span>
@@ -510,6 +522,79 @@ function BannerGenerator({ settings, onSettingsChange }) {
         </div>
       </div>
 
+
+      {/* 3.1 Banner Image Position & Size - only shown when using banner image */}
+      {settings.useBannerImage && (
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader} onClick={() => toggleSection('bannerImagePosition')}>
+            <div className={styles.sectionTitle}>Banner Image Position & Size</div>
+            <span className={styles.chevronIcon}>
+              {expandedSections.bannerImagePosition ? <FaChevronUp /> : <FaChevronDown />}
+            </span>
+          </div>
+          <div className={expandedSections.bannerImagePosition ? styles.sectionContent : styles.sectionContentHidden}>
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="bannerImageScale">Banner Image Scale</label>
+              <div className={styles.sliderContainer}>
+                <input
+                  className={styles.input}
+                  type="range"
+                  id="bannerImageScale"
+                  name="bannerImageScale"
+                  min="50"
+                  max="150"
+                  value={settings.bannerImageScale || 100}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    onSettingsChange({ bannerImageScale: value });
+                  }}
+                />
+                <span className={styles.sliderValue}>{settings.bannerImageScale || 100}%</span>
+              </div>
+            </div>
+          
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="bannerImageOffsetX">Horizontal Position</label>
+              <div className={styles.sliderContainer}>
+                <input
+                  className={styles.input}
+                  type="range"
+                  id="bannerImageOffsetX"
+                  name="bannerImageOffsetX"
+                  min="-50"
+                  max="50"
+                  value={settings.bannerImageOffsetX || 0}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    onSettingsChange({ bannerImageOffsetX: value });
+                  }}
+                />
+                <span className={styles.sliderValue}>{settings.bannerImageOffsetX || 0}</span>
+              </div>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="bannerImageOffsetY">Vertical Position</label>
+              <div className={styles.sliderContainer}>
+                <input
+                  className={styles.input}
+                  type="range"
+                  id="bannerImageOffsetY"
+                  name="bannerImageOffsetY"
+                  min="-50"
+                  max="50"
+                  value={settings.bannerImageOffsetY || 0}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    onSettingsChange({ bannerImageOffsetY: value });
+                  }}
+                />
+                <span className={styles.sliderValue}>{settings.bannerImageOffsetY || 0}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4. Banner Subtitle */}
       <div className={styles.formSection}>
@@ -562,6 +647,75 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   />
                   <span className={styles.sliderValue}>{settings.subtitleFontSize}px</span>
                 </div>
+
+                <label className={styles.label} htmlFor="subtitleFontFamily" style={{ marginTop: '0.5rem' }}>Subtitle Font Family</label>
+                <select
+                  className={styles.select}
+                  id="subtitleFontFamily"
+                  name="subtitleFontFamily"
+                  value={settings.subtitleFontFamily || settings.fontFamily || "'KHongo', sans-serif"}
+                  onChange={handleChange}
+                >
+                  {/* Western Fonts */}
+                  <optgroup label="Western Fonts">
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                  </optgroup>
+                  
+                  {/* Custom Japanese Fonts */}
+                  <optgroup label="Custom Japanese Fonts">
+                    <option value="'Oshigo', sans-serif">Oshigo</option>
+                    <option value="'Nagino', sans-serif">Nagino</option>
+                    <option value="'Aomemo', sans-serif">Aomemo</option>
+                    <option value="'Gisshiri', sans-serif">Gisshiri</option>
+                    <option value="'Migikataagari', sans-serif">Migikataagari</option>
+                    <option value="'Tamanegi', sans-serif">玉ねぎ楷書</option>
+                    <option value="'AkazukiPop', sans-serif">AkazukiPop</option>
+                    <option value="'Karakaze', sans-serif">Karakaze</option>
+                    <option value="'ZeroGothic', sans-serif">ZeroGothic</option>
+                    <option value="'IoEI', sans-serif">IoEI</option>
+                    <option value="'BrushTappitsu', sans-serif">筆達筆</option>
+                    <option value="'AprilGothic', sans-serif">April Gothic</option>
+                    <option value="'MishimishiBlock', sans-serif">ミシミシブロック</option>
+                    <option value="'KSentai', sans-serif">K戦隊</option>
+                    <option value="'Kirin', sans-serif">麒麟</option>
+                    <option value="'Keee', sans-serif">KEEE!</option>
+                    <option value="'KKotaro', sans-serif">K小太郎</option>
+                    <option value="'KHongo', sans-serif">K本郷</option>
+                    <option value="'Potejiface', sans-serif">ポテジフェイス</option>
+                    <option value="'AstroZ', sans-serif">AstroZ</option>
+                  </optgroup>
+                  
+                  {/* Google Japanese Fonts */}
+                  <optgroup label="Google Japanese Fonts">
+                    <option value="'Kasei Decol', sans-serif">Kasei Decol</option>
+                    <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+                    <option value="'Noto Serif JP', serif">Noto Serif JP</option>
+                    <option value="'M PLUS 1p', sans-serif">M PLUS 1p</option>
+                    <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded 1c</option>
+                    <option value="'Kosugi Maru', sans-serif">Kosugi Maru</option>
+                    <option value="'Sawarabi Mincho', serif">Sawarabi Mincho</option>
+                    <option value="'Sawarabi Gothic', sans-serif">Sawarabi Gothic</option>
+                    <option value="'Shippori Mincho', serif">Shippori Mincho</option>
+                    <option value="'Yuji Syuku', serif">Yuji Syuku</option>
+                    <option value="'Zen Kaku Gothic New', sans-serif">Zen Kaku Gothic</option>
+                    <option value="'Zen Maru Gothic', sans-serif">Zen Maru Gothic</option>
+                    <option value="'Zen Old Mincho', serif">Zen Old Mincho</option>
+                  </optgroup>
+                </select>
+                
+                <label className={styles.label} htmlFor="subtitleFontColor" style={{ marginTop: '0.5rem' }}>Subtitle Font Color</label>
+                <input
+                  className={styles.colorInput}
+                  type="color"
+                  id="subtitleFontColor"
+                  name="subtitleFontColor"
+                  value={settings.subtitleFontColor || settings.fontColor}
+                  onChange={handleChange}
+                />
               </>
             )}
           </div>
@@ -579,6 +733,26 @@ function BannerGenerator({ settings, onSettingsChange }) {
         <div className={expandedSections.subtitlePosition ? styles.sectionContent : styles.sectionContentHidden}>
           {settings.subtitleVisible && (
             <>
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="subtitleScale">Subtitle Scale</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
+                    type="range"
+                    id="subtitleScale"
+                    name="subtitleScale"
+                    min="50"
+                    max="150"
+                    value={settings.subtitleScale || 100}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      onSettingsChange({ subtitleScale: value });
+                    }}
+                  />
+                  <span className={styles.sliderValue}>{settings.subtitleScale || 100}%</span>
+                </div>
+              </div>
+
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="subtitleOffsetX">Subtitle Horizontal Position</label>
                 <div className={styles.sliderContainer}>

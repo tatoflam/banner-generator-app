@@ -99,9 +99,9 @@ function BannerPreview({ settings, bannerRef }) {
                 className={styles.subtitle}
                 style={{
                   fontSize: `${settings.subtitleFontSize}px`,
-                  fontFamily: settings.fontFamily || "'KHongo', sans-serif",
-                  color: settings.fontColor || '#000000',
-                  transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
+                  fontFamily: settings.subtitleFontFamily || settings.fontFamily || "'KHongo', sans-serif",
+                  color: settings.subtitleFontColor || settings.fontColor || '#000000',
+                  transform: `scale(${(settings.subtitleScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
                   textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
                 }}
               >
@@ -173,7 +173,9 @@ function BannerPreview({ settings, bannerRef }) {
                   className={styles.subtitleText}
                   style={{
                     fontSize: `${settings.subtitleFontSize}px`,
-                    transform: `translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
+                    fontFamily: settings.subtitleFontFamily || settings.fontFamily,
+                    color: settings.subtitleFontColor || settings.fontColor,
+                    transform: `scale(${(settings.subtitleScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
                     textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
                   }}
                 >
