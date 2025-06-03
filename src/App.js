@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import BannerGenerator from './components/BannerGenerator';
 import BannerPreview from './components/BannerPreview';
 import AIRefiner from './components/AIRefiner';
 import styles from './styles/App.module.css';
 
 function App() {
+  const [previewDimensions, setPreviewDimensions] = useState({ width: 0, height: 0 });
   const [bannerSettings, setBannerSettings] = useState({
     text: 'スッパクロ',
     fontFamily: "'KHongo', sans-serif",
@@ -49,6 +50,10 @@ function App() {
   const handleRefinementComplete = (refinedImageUrl) => {
     setBannerSettings({ ...bannerSettings, refinedImageUrl });
   };
+  
+  const handlePreviewDimensionsChange = useCallback((dimensions) => {
+    setPreviewDimensions(dimensions);
+  }, []);
 
   return (
     <div className={styles.app}>
@@ -61,13 +66,15 @@ function App() {
           <BannerPreview 
             settings={bannerSettings} 
             bannerRef={bannerRef}
+            onPreviewDimensionsChange={handlePreviewDimensionsChange}
           />
         </div>
         <div className={styles.controlsSection}>
           <div className={styles.generatorSection}>
             <BannerGenerator 
               settings={bannerSettings} 
-              onSettingsChange={handleSettingsChange} 
+              onSettingsChange={handleSettingsChange}
+              previewDimensions={previewDimensions}
             />
           </div>
           <div className={styles.refinerSection}>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import styles from '../styles/BannerGenerator.module.css';
 
-function BannerGenerator({ settings, onSettingsChange }) {
+function BannerGenerator({ settings, onSettingsChange, previewDimensions }) {
   const [imageOptions, setImageOptions] = useState([]);
   const [expandedSections, setExpandedSections] = useState({
     background: false,
@@ -486,8 +486,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 type="range"
                 id="bannerOffsetX"
                 name="bannerOffsetX"
-                min="-50"
-                max="50"
+                min={previewDimensions.width ? -previewDimensions.width / 2 : -100}
+                max={previewDimensions.width ? previewDimensions.width / 2 : 100}
                 value={settings.bannerOffsetX || 0}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
@@ -507,8 +507,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                 type="range"
                 id="bannerOffsetY"
                 name="bannerOffsetY"
-                min="-50"
-                max="50"
+                min={previewDimensions.height ? -previewDimensions.height / 2 : -100}
+                max={previewDimensions.height ? previewDimensions.height / 2 : 100}
                 value={settings.bannerOffsetY || 0}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
@@ -561,8 +561,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   type="range"
                   id="bannerImageOffsetX"
                   name="bannerImageOffsetX"
-                  min="-50"
-                  max="50"
+                  min={previewDimensions.width ? -previewDimensions.width / 2 : -100}
+                  max={previewDimensions.width ? previewDimensions.width / 2 : 100}
                   value={settings.bannerImageOffsetX || 0}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
@@ -581,8 +581,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                   type="range"
                   id="bannerImageOffsetY"
                   name="bannerImageOffsetY"
-                  min="-50"
-                  max="50"
+                  min={previewDimensions.height ? -previewDimensions.height / 2 : -100}
+                  max={previewDimensions.height ? previewDimensions.height / 2 : 100}
                   value={settings.bannerImageOffsetY || 0}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
@@ -761,8 +761,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     type="range"
                     id="subtitleOffsetX"
                     name="subtitleOffsetX"
-                    min="-50"
-                    max="50"
+                    min={previewDimensions.width ? -previewDimensions.width : -200}
+                    max={previewDimensions.width ? previewDimensions.width : 200}
                     value={settings.subtitleOffsetX || 0}
                     onChange={handleChange}
                   />
@@ -778,8 +778,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
                     type="range"
                     id="subtitleOffsetY"
                     name="subtitleOffsetY"
-                    min="-50"
-                    max="50"
+                    min={previewDimensions.height ? -previewDimensions.height : -200}
+                    max={previewDimensions.height ? previewDimensions.height : 200}
                     value={settings.subtitleOffsetY || 0}
                     onChange={handleChange}
                   />

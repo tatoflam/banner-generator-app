@@ -1,9 +1,41 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styles from '../styles/BannerPreview.module.css';
 // Import html-to-image dynamically when needed instead of at the top level
 
-function BannerPreview({ settings, bannerRef }) {
+function BannerPreview({ settings, bannerRef, onPreviewDimensionsChange }) {
   const previewRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  
+  // Measure the preview area dimensions
+  useEffect(() => {
+    if (previewRef.current) {
+      const updateDimensions = () => {
+        const width = previewRef.current.offsetWidth;
+        const height = previewRef.current.offsetHeight;
+        
+        if (width !== dimensions.width || height !== dimensions.height) {
+          setDimensions({ width, height });
+          if (onPreviewDimensionsChange) {
+            onPreviewDimensionsChange({ width, height });
+          }
+        }
+      };
+      
+      // Initial measurement
+      updateDimensions();
+      
+      // Set up resize observer to detect changes in the preview area size
+      const resizeObserver = new ResizeObserver(updateDimensions);
+      resizeObserver.observe(previewRef.current);
+      
+      // Clean up
+      return () => {
+        if (previewRef.current) {
+          resizeObserver.unobserve(previewRef.current);
+        }
+      };
+    }
+  }, [dimensions.width, dimensions.height, onPreviewDimensionsChange]);
   
   const handleDownload = async () => {
     if (!previewRef.current) return;
