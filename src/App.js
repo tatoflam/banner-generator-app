@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import BannerGenerator from './components/BannerGenerator';
 import BannerPreview from './components/BannerPreview';
 import AIRefiner from './components/AIRefiner';
@@ -35,7 +35,7 @@ function App() {
     refinedImageUrl: null,
     showTextOnBackground: true,
     useBannerImage: true,
-    bannerImage: `${process.env.PUBLIC_URL}/assets/image/title/すっぱくろ題字_01.png`,
+    bannerImage: `${process.env.PUBLIC_URL}/assets/image/title/ignore_すっぱくろ題字_01.png`,
     bannerImageScale: 100,
     bannerImageOffsetX: 0,
     bannerImageOffsetY: 0
@@ -53,6 +53,26 @@ function App() {
   
   const handlePreviewDimensionsChange = useCallback((dimensions) => {
     setPreviewDimensions(dimensions);
+  }, []);
+  
+  // Check if banner image exists, if not, switch to text mode
+  useEffect(() => {
+    if (bannerSettings.useBannerImage && bannerSettings.bannerImage) {
+      const img = new Image();
+      img.onload = () => {
+        // Image exists, do nothing
+        console.log('Banner image loaded successfully');
+      };
+      img.onerror = () => {
+        // Image doesn't exist, switch to text mode
+        console.log('Banner image not found, switching to text mode');
+        setBannerSettings(prevSettings => ({
+          ...prevSettings,
+          useBannerImage: false
+        }));
+      };
+      img.src = bannerSettings.bannerImage;
+    }
   }, []);
 
   return (

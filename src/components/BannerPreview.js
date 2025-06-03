@@ -8,30 +8,50 @@ function BannerPreview({ settings, bannerRef, onPreviewDimensionsChange }) {
   
   // Measure the preview area dimensions
   useEffect(() => {
-    if (previewRef.current) {
-      const updateDimensions = () => {
-        const width = previewRef.current.offsetWidth;
-        const height = previewRef.current.offsetHeight;
-        
-        if (width !== dimensions.width || height !== dimensions.height) {
-          setDimensions({ width, height });
-          if (onPreviewDimensionsChange) {
-            onPreviewDimensionsChange({ width, height });
+    // Define the update dimensions function with null checks
+    const updateDimensions = () => {
+      if (previewRef.current) {
+        try {
+          const width = previewRef.current.offsetWidth;
+          const height = previewRef.current.offsetHeight;
+          
+          if (width !== dimensions.width || height !== dimensions.height) {
+            setDimensions({ width, height });
+            if (onPreviewDimensionsChange) {
+              onPreviewDimensionsChange({ width, height });
+            }
           }
+        } catch (error) {
+          console.error('Error measuring preview dimensions:', error);
         }
-      };
-      
+      }
+    };
+    
+    // Only proceed if previewRef.current exists
+    if (previewRef.current) {
       // Initial measurement
       updateDimensions();
       
       // Set up resize observer to detect changes in the preview area size
-      const resizeObserver = new ResizeObserver(updateDimensions);
-      resizeObserver.observe(previewRef.current);
+      const resizeObserver = new ResizeObserver(entries => {
+        // Additional check to ensure the element still exists
+        if (previewRef.current && entries.length > 0) {
+          updateDimensions();
+        }
+      });
+      
+      try {
+        resizeObserver.observe(previewRef.current);
+      } catch (error) {
+        console.error('Error observing preview element:', error);
+      }
       
       // Clean up
       return () => {
-        if (previewRef.current) {
-          resizeObserver.unobserve(previewRef.current);
+        try {
+          resizeObserver.disconnect();
+        } catch (error) {
+          console.error('Error disconnecting resize observer:', error);
         }
       };
     }
