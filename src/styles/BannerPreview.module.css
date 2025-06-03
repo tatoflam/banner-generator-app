@@ -12,6 +12,8 @@
   max-width: 800px;
   margin: 0 auto;
   box-sizing: border-box;
+  z-index: 10;
+  position: relative;
 }
 
 .previewContainer h2 {

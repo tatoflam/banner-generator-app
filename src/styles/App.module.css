@@ -25,19 +25,34 @@
 }
 
 .content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
 .previewSection {
-  grid-column: 1 / -1;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: center;
+  background-color: #fff;
+  padding-bottom: 1rem;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .controlsSection {
-  display: contents;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  height: 100%;
+  max-height: calc(100vh - 400px);
 }
 
 .generatorSection {
@@ -80,8 +95,13 @@
   }
   
   .content {
+    height: calc(100vh - 120px);
+  }
+  
+  .controlsSection {
     grid-template-columns: 1fr;
     gap: 1rem;
+    max-height: calc(100vh - 400px);
   }
   
   .generatorSection,
@@ -101,5 +121,9 @@
   
   .header {
     margin-bottom: 1.5rem;
+  }
+  
+  .controlsSection {
+    max-height: calc(100vh - 350px);
   }
 }
