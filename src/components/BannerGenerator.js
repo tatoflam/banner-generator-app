@@ -8,6 +8,8 @@ function BannerGenerator({ settings, onSettingsChange }) {
     background: false,
     position: false,
     text: true,
+    subtitle: false,
+    subtitlePosition: false,
     shape: false
   });
   
@@ -327,82 +329,6 @@ function BannerGenerator({ settings, onSettingsChange }) {
             </div>
           )}
           
-          {/* Subtitle - always shown, regardless of banner image setting */}
-          <div className={styles.formGroup}>
-            <div className={styles.checkboxContainer}>
-              <input
-                className={styles.checkbox}
-                type="checkbox"
-                id="subtitleVisible"
-                name="subtitleVisible"
-                checked={settings.subtitleVisible}
-                onChange={(e) => {
-                  onSettingsChange({ subtitleVisible: e.target.checked });
-                }}
-              />
-              <label className={styles.checkboxLabel} htmlFor="subtitleVisible">Show Subtitle</label>
-            </div>
-            
-            {settings.subtitleVisible && (
-              <>
-                <label className={styles.label} htmlFor="subtitle">Subtitle Text (e.g., 第n回)</label>
-                <input
-                  className={styles.input}
-                  type="text"
-                  id="subtitle"
-                  name="subtitle"
-                  value={settings.subtitle}
-                  onChange={handleChange}
-                  placeholder="第1回"
-                />
-                
-                <label className={styles.label} htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</label>
-                <div className={styles.sliderContainer}>
-                  <input
-                    className={styles.input}
-                    type="range"
-                    id="subtitleFontSize"
-                    name="subtitleFontSize"
-                    min="8"
-                    max="36"
-                    value={settings.subtitleFontSize}
-                    onChange={handleChange}
-                  />
-                  <span className={styles.sliderValue}>{settings.subtitleFontSize}px</span>
-                </div>
-                
-                <label className={styles.label} htmlFor="subtitleOffsetX" style={{ marginTop: '0.5rem' }}>Subtitle Horizontal Position</label>
-                <div className={styles.sliderContainer}>
-                  <input
-                    className={styles.input}
-                    type="range"
-                    id="subtitleOffsetX"
-                    name="subtitleOffsetX"
-                    min="-50"
-                    max="50"
-                    value={settings.subtitleOffsetX || 0}
-                    onChange={handleChange}
-                  />
-                  <span className={styles.sliderValue}>{settings.subtitleOffsetX || 0}</span>
-                </div>
-                
-                <label className={styles.label} htmlFor="subtitleOffsetY" style={{ marginTop: '0.5rem' }}>Subtitle Vertical Position</label>
-                <div className={styles.sliderContainer}>
-                  <input
-                    className={styles.input}
-                    type="range"
-                    id="subtitleOffsetY"
-                    name="subtitleOffsetY"
-                    min="-50"
-                    max="50"
-                    value={settings.subtitleOffsetY || 0}
-                    onChange={handleChange}
-                  />
-                  <span className={styles.sliderValue}>{settings.subtitleOffsetY || 0}</span>
-                </div>
-              </>
-            )}
-          </div>
           
           {/* Font settings - only shown when not using banner image */}
           {!settings.useBannerImage && (
@@ -585,7 +511,113 @@ function BannerGenerator({ settings, onSettingsChange }) {
       </div>
 
 
-      {/* 4. Banner Title Background Shape */}
+      {/* 4. Banner Subtitle */}
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('subtitle')}>
+          <div className={styles.sectionTitle}>Banner Subtitle</div>
+          <span className={styles.chevronIcon}>
+            {expandedSections.subtitle ? <FaChevronUp /> : <FaChevronDown />}
+          </span>
+        </div>
+        <div className={expandedSections.subtitle ? styles.sectionContent : styles.sectionContentHidden}>
+          <div className={styles.formGroup}>
+            <div className={styles.checkboxContainer}>
+              <input
+                className={styles.checkbox}
+                type="checkbox"
+                id="subtitleVisible"
+                name="subtitleVisible"
+                checked={settings.subtitleVisible}
+                onChange={(e) => {
+                  onSettingsChange({ subtitleVisible: e.target.checked });
+                }}
+              />
+              <label className={styles.checkboxLabel} htmlFor="subtitleVisible">Show Subtitle</label>
+            </div>
+            
+            {settings.subtitleVisible && (
+              <>
+                <label className={styles.label} htmlFor="subtitle">Subtitle Text (e.g., 第n回)</label>
+                <input
+                  className={styles.input}
+                  type="text"
+                  id="subtitle"
+                  name="subtitle"
+                  value={settings.subtitle}
+                  onChange={handleChange}
+                  placeholder="第1回"
+                />
+                
+                <label className={styles.label} htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
+                    type="range"
+                    id="subtitleFontSize"
+                    name="subtitleFontSize"
+                    min="8"
+                    max="36"
+                    value={settings.subtitleFontSize}
+                    onChange={handleChange}
+                  />
+                  <span className={styles.sliderValue}>{settings.subtitleFontSize}px</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Banner Subtitle Position & Size */}
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeader} onClick={() => toggleSection('subtitlePosition')}>
+          <div className={styles.sectionTitle}>Banner Subtitle Position & Size</div>
+          <span className={styles.chevronIcon}>
+            {expandedSections.subtitlePosition ? <FaChevronUp /> : <FaChevronDown />}
+          </span>
+        </div>
+        <div className={expandedSections.subtitlePosition ? styles.sectionContent : styles.sectionContentHidden}>
+          {settings.subtitleVisible && (
+            <>
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="subtitleOffsetX">Subtitle Horizontal Position</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
+                    type="range"
+                    id="subtitleOffsetX"
+                    name="subtitleOffsetX"
+                    min="-50"
+                    max="50"
+                    value={settings.subtitleOffsetX || 0}
+                    onChange={handleChange}
+                  />
+                  <span className={styles.sliderValue}>{settings.subtitleOffsetX || 0}</span>
+                </div>
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="subtitleOffsetY">Subtitle Vertical Position</label>
+                <div className={styles.sliderContainer}>
+                  <input
+                    className={styles.input}
+                    type="range"
+                    id="subtitleOffsetY"
+                    name="subtitleOffsetY"
+                    min="-50"
+                    max="50"
+                    value={settings.subtitleOffsetY || 0}
+                    onChange={handleChange}
+                  />
+                  <span className={styles.sliderValue}>{settings.subtitleOffsetY || 0}</span>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 6. Banner Title Background Shape */}
       <div className={styles.formSection}>
         <div className={styles.sectionHeader} onClick={() => toggleSection('shape')}>
           <div className={styles.sectionTitle}>Banner Title Background Shape</div>
