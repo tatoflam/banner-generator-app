@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/banner-generator-app/static/css/main.85f8c090.css",
-    "main.js": "/banner-generator-app/static/js/main.febbf259.js",
+    "main.css": "/banner-generator-app/static/css/main.4af9e4ec.css",
+    "main.js": "/banner-generator-app/static/js/main.17092ce1.js",
     "static/js/239.5e2a88dc.chunk.js": "/banner-generator-app/static/js/239.5e2a88dc.chunk.js",
     "static/js/316.da5190eb.chunk.js": "/banner-generator-app/static/js/316.da5190eb.chunk.js",
     "index.html": "/banner-generator-app/index.html",
-    "main.85f8c090.css.map": "/banner-generator-app/static/css/main.85f8c090.css.map",
-    "main.febbf259.js.map": "/banner-generator-app/static/js/main.febbf259.js.map",
+    "main.4af9e4ec.css.map": "/banner-generator-app/static/css/main.4af9e4ec.css.map",
+    "main.17092ce1.js.map": "/banner-generator-app/static/js/main.17092ce1.js.map",
     "239.5e2a88dc.chunk.js.map": "/banner-generator-app/static/js/239.5e2a88dc.chunk.js.map",
     "316.da5190eb.chunk.js.map": "/banner-generator-app/static/js/316.da5190eb.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.85f8c090.css",
-    "static/js/main.febbf259.js"
+    "static/css/main.4af9e4ec.css",
+    "static/js/main.17092ce1.js"
   ]
 }
