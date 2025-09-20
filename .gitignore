@@ -3,4 +3,4 @@ build
 .env
 public/assets/image/bg/ignore*
 public/assets/image/title/ignore*
-
+.DS_Store

@@ -11,7 +11,7 @@ function App() {
     fontFamily: "'KHongo', sans-serif",
     fontSize: 65,
     fontColor: '#fff1ff',
-    subtitle: '第１号',
+    subtitle: '号外 第2号',
     subtitleFontSize: 32,
     subtitleVisible: true,
     subtitleOffsetX: 130,

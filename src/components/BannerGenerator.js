@@ -21,15 +21,6 @@ function BannerGenerator({ settings, onSettingsChange, previewDimensions }) {
     }));
   };
 
-  // Known image files that exist in the directory
-  const knownFiles = [
-    'spring.png',
-    'summer.png',
-    'autumn.png',
-    'winter.png',
-    'nogawa.png',
-    'ignore_2025koryukai.png'
-  ];
   
   useEffect(() => {
     // Start with 'None' option
@@ -55,13 +46,14 @@ function BannerGenerator({ settings, onSettingsChange, previewDimensions }) {
         // The directory path where background images are stored
         const bgDirPath = `${process.env.PUBLIC_URL}/assets/image/bg`;
         
-        // Try to fetch the directory to see what files are available
-        const response = await fetch(bgDirPath);
+        // Fetch the manifest file to get the list of available images
+        const manifestResponse = await fetch(`${bgDirPath}/manifest.json`);
         
-        // If we can't access the directory directly, use a fallback approach
-        if (!response.ok) {
-          // Process each known file
-          const imagePromises = knownFiles.map(async (filename) => {
+        if (manifestResponse.ok) {
+          const imageFilenames = await manifestResponse.json();
+          
+          // Process each image file from the manifest
+          const imagePromises = imageFilenames.map(async (filename) => {
             try {
               // Check if the file exists by trying to fetch it
               const fileResponse = await fetch(`${bgDirPath}/${filename}`);
@@ -85,29 +77,13 @@ function BannerGenerator({ settings, onSettingsChange, previewDimensions }) {
           // Update state with the valid images
           setImageOptions([...images, ...validImages]);
         } else {
-          // If we can access the directory (unlikely in browser), parse the response
-          // This would require server-side support or a directory listing
-          console.warn('Directory listing not supported in browser. Using fallback method.');
-          
-          const fallbackImages = knownFiles.map(filename => ({
-            name: formatDisplayName(filename),
-            path: `${bgDirPath}/${filename}`
-          }));
-          
-          setImageOptions([...images, ...fallbackImages]);
+          console.warn('Could not fetch manifest.json, no background images will be loaded');
+          setImageOptions(images); // Just the 'None' option
         }
       } catch (error) {
         console.error('Error fetching background images:', error);
-        
-        // Fallback to known files if there's an error
-        const bgDirPath = `${process.env.PUBLIC_URL}/assets/image/bg`;
-        
-        const fallbackImages = knownFiles.map(filename => ({
-          name: formatDisplayName(filename),
-          path: `${bgDirPath}/${filename}`
-        }));
-        
-        setImageOptions([...images, ...fallbackImages]);
+        console.warn('Could not load background images, only "None" option will be available');
+        setImageOptions(images); // Just the 'None' option
       }
     };
     
