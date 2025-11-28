@@ -157,7 +157,8 @@ function BannerPreview({ settings, bannerRef, onPreviewDimensionsChange }) {
                   color: settings.subtitleFontColor || settings.fontColor || '#000000',
                   position: 'absolute',
                   transform: `scale(${(settings.subtitleBannerScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 0}%)`,
-                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
+                  textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none',
+                  whiteSpace: 'pre-line'
                 }}
               >
                 {settings.subtitle}
@@ -231,7 +232,8 @@ function BannerPreview({ settings, bannerRef, onPreviewDimensionsChange }) {
                     fontFamily: settings.subtitleFontFamily || settings.fontFamily,
                     color: settings.subtitleFontColor || settings.fontColor,
                     transform: `scale(${(settings.subtitleBannerScale || 100) / 100}) translate(${settings.subtitleOffsetX || 0}%, ${settings.subtitleOffsetY || 50}%)`,
-                    textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none'
+                    textShadow: settings.refinedImageUrl ? '1px 1px 2px rgba(0,0,0,0.7)' : 'none',
+                    whiteSpace: 'pre-line'
                   }}
                 >
                   {settings.subtitle}

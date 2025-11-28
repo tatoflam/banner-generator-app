@@ -598,15 +598,16 @@ function BannerGenerator({ settings, onSettingsChange, previewDimensions }) {
             
             {settings.subtitleVisible && (
               <>
-                <label className={styles.label} htmlFor="subtitle">Subtitle Text (e.g., 第n回)</label>
-                <input
+                <label className={styles.label} htmlFor="subtitle">Subtitle Text (e.g., 第n回) - Use Enter for line breaks</label>
+                <textarea
                   className={styles.input}
-                  type="text"
                   id="subtitle"
                   name="subtitle"
                   value={settings.subtitle}
                   onChange={handleChange}
-                  placeholder="第1回"
+                  placeholder="第1回&#10;改行可能"
+                  rows="3"
+                  style={{ resize: 'vertical', minHeight: '60px' }}
                 />
                 
                 <label className={styles.label} htmlFor="subtitleFontSize" style={{ marginTop: '0.5rem' }}>Subtitle Font Size</label>
